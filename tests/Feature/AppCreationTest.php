@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
+
+test('user can create an app', function () {
+    
+    $uuid = Str::uuid();
+    $key = Str::random(20);
+    $secret = Str::random(20);
+
+    $this->mock(Str::class, function ($mock) use ($uuid, $key, $secret) {
+        $mock->makePartial();
+
+        $mock->shouldReceive('uuid')
+            ->once()
+            ->andReturn($uuid);
+
+        $mock->shouldReceive('random')
+            ->once()
+            ->andReturn($key);
+
+        $mock->shouldReceive('random')
+            ->once()
+            ->andReturn($secret);
+    });
+
+    $response = $this->postJson(route('api.apps.store'));
+    $response->assertStatus(Response::HTTP_CREATED);
+
+    $this->assertDatabaseHas('apps', [
+        'app_id' => Str::lower($uuid),
+        'app_key' => Str::lower($key),
+        'app_secret' => Str::lower($secret),
+    ]);
+});
