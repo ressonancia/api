@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\App;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,5 +22,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Jacob Lee',
             'email' => 'jacob@l30.space',
         ]);
+
+        App::factory()->times(20)->create();
     }
 }

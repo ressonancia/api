@@ -10,5 +10,7 @@ class App extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $hidden = ['deleted_at'];
+
     protected $fillable = ['user_id', 'app_id', 'app_key', 'app_secret'];
 }
