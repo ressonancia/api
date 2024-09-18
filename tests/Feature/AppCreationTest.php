@@ -25,12 +25,17 @@ test('user can create an app', function () {
             ->andReturn($secret);
     });
 
-    $response = $this->postJson(route('api.apps.store'));
+    $response = $this->postJson(route('api.apps.store'), [
+        'app_name' => 'Batocera Cloud',
+        'app_language_choice' => 'PHP'
+    ]);
     $response->assertStatus(Response::HTTP_CREATED);
 
     $this->assertDatabaseHas('apps', [
         'app_id' => Str::lower($uuid),
         'app_key' => Str::lower($key),
         'app_secret' => Str::lower($secret),
+        'app_name' => 'Batocera Cloud',
+        'app_language_choice' => 'PHP',
     ]);
 });

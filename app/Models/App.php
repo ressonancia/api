@@ -12,5 +12,5 @@ class App extends Model
 
     protected $hidden = ['deleted_at'];
 
-    protected $fillable = ['user_id', 'app_id', 'app_key', 'app_secret'];
+    protected $fillable = ['user_id', 'app_name', 'app_language_choice', 'app_id', 'app_key', 'app_secret'];
 }

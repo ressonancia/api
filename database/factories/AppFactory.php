@@ -18,6 +18,10 @@ class AppFactory extends Factory
     public function definition(): array
     {
         return [
+            'app_name' => $this->faker->word(),
+            'app_language_choice' => $this->faker->randomElement([
+                'PHP', 'Java', 'JavaScript', 'Python', 'Laravel', 'Django', 'Go', 'C#'
+            ]),
             'app_id' => (string) Str::uuid(),
             'app_key' => Str::lower(
                 Str::random(20)
