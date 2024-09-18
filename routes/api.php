@@ -9,4 +9,5 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/apps', [AppsController::class, 'index'])->name('api.apps.index');
+Route::get('/apps/{app}', [AppsController::class, 'show'])->name('api.apps.show');
 Route::post('/apps', [AppsController::class, 'store'])->name('api.apps.store');

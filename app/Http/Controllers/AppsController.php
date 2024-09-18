@@ -16,6 +16,10 @@ class AppsController extends Controller
         );
     }
 
+    function show(App $app) : JsonResponse {
+        return response()->json($app);
+    }
+
     function store(CreateAppRequest $request, Str $stringSupport) : JsonResponse {
         return response()->json(
             App::create([
