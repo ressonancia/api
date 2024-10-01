@@ -64,12 +64,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "extra": {
-        "laravel": {
-            "dont-discover": [
-                "laravel/reverb"
-            ]
-        }
-    }
+    "prefer-stable": true
 }
