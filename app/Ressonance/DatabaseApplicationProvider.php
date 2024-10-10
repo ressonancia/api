@@ -19,8 +19,6 @@ class DatabaseApplicationProvider implements ApplicationProvider
 
     /**
      * Get all of the configured applications as Application instances.
-     *
-     * @return \Illuminate\Support\Collection<\Laravel\Reverb\Application>
      */
     public function all(): Collection
     {
