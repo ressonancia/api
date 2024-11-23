@@ -47,6 +47,18 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: payroll-phpmyadmin
+        ports:
+            - '81:80'
+        environment:
+            - PMA_ARBITRARY=1
+        restart: always
+        volumes:
+            - /sessions
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\App;
 use App\Ressonance\DatabaseApplicationProvider;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 use Laravel\Reverb\ServerProviderManager;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
                 App::get()->collect()
             );
         });
+
+        Passport::enablePasswordGrant();
     }
 }
