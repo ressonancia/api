@@ -49,7 +49,6 @@ services:
             timeout: 5s
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
-        container_name: payroll-phpmyadmin
         ports:
             - '81:80'
         environment:
