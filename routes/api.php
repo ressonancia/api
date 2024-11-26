@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
-    });
+    })->name('api.me');
 
     Route::get('/apps', [AppsController::class, 'index'])->name('api.apps.index');
     Route::get('/apps/{app}', [AppsController::class, 'show'])->name('api.apps.show');

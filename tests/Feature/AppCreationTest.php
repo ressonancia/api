@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
@@ -38,4 +39,14 @@ test('user can create an app', function () {
         'app_name' => 'Batocera Cloud',
         'app_language_choice' => 'PHP',
     ]);
+});
+
+
+test('user needs to be logged in to create app', function () {
+    $this->withMiddleware(Authenticate::class);
+
+    $this->postJson(route('api.apps.store'), [
+        'app_name' => 'Batocera Cloud',
+        'app_language_choice' => 'PHP'
+    ])->assertUnauthorized();
 });

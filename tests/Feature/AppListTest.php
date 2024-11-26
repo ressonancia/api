@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\App;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 
 test('user can list apps', function () {
@@ -14,4 +15,10 @@ test('user can list apps', function () {
     );
 
     $response->assertStatus(Response::HTTP_OK);
+});
+
+test('user needs to be logged in to list', function () {
+    $this->withMiddleware(Authenticate::class);
+
+    $this->getJson(route('api.apps.index'))->assertUnauthorized();
 });
