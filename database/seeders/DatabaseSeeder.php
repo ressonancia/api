@@ -4,8 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\App;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Laravel\Passport\Client;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,6 +22,26 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Jacob Lee',
             'email' => 'jacob@l30.space',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Zaphod Beeblebrox',
+            'email' => 'zaphod@l30.space',
+            'password' => bcrypt('secret')
+        ]);
+
+        Client::truncate();
+
+        DB::table('oauth_clients')->insert([
+            'name' => "First Party SPA",
+            'secret' => 'Dq9p296oaZtbaH7HX8v9gD1nuHaWmLSlox8a9Bfk',
+            'provider' => 'users',
+            'redirect' => 'http://localhost',
+            'password_client' => 1,
+            'personal_access_client' => 0,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         App::factory()->times(20)->create();
