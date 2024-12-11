@@ -12,7 +12,7 @@ class AppsController extends Controller
 {
     function index() : JsonResponse {
         return response()->json(
-            App::paginate()
+            App::paginate(1000)
         );
     }
 
