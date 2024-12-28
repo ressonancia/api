@@ -5,11 +5,18 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
+use Laravel\Passport\Client;
 
 test('user can create an account', function () {
 
     Carbon::setTestNow();
     Event::fake(Registered::class);
+
+    $oauthClient = Client::factory()->create([
+        'id' => 2,
+        'personal_access_client' => 1,
+        'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2'
+    ]);
 
     $response = $this->postJson(route('api.account.store'), [
         'name' => 'Fabio Lioni',
@@ -18,13 +25,17 @@ test('user can create an account', function () {
         'password_confirmation' => 'VerySecret123',
     ]);
 
-    $response->assertStatus(Response::HTTP_CREATED)
-        ->assertJson([
-            'name' => 'Fabio Lioni',
-            'email' => 'lioni@ressonance.com',
-            'created_at' => now()->toIso8601String(),
-            'updated_at' => now()->toIso8601String()
-        ]);
+    $jsonResponse = $response->assertStatus(Response::HTTP_CREATED)
+        ->json();
+
+    expect($jsonResponse['user']['name'])->toBe('Fabio Lioni');
+    expect($jsonResponse['user']['email'])->toBe('lioni@ressonance.com');
+    expect($jsonResponse['user']['created_at'])->toBe(now()->toIso8601String());
+    expect($jsonResponse['user']['updated_at'])->toBe(now()->toIso8601String());
+    expect($jsonResponse['token_type'])->toBe('Bearer');
+    expect($jsonResponse['access_token'])->not->toBeEmpty();
+    expect(ceil($jsonResponse['expires_in']))
+        ->toBe(ceil(now()->addYear()->diffInSeconds()));
 
     Event::assertDispatched(Registered::class, function ($eventUser) {
         return $eventUser->user->email === 'lioni@ressonance.com';
@@ -33,6 +44,12 @@ test('user can create an account', function () {
     $this->assertDatabaseHas('users', [
         'name' => 'Fabio Lioni',
         'email' => 'lioni@ressonance.com'
+    ]);
+
+    $this->assertDatabaseHas('oauth_access_tokens', [
+        'name' => 'Pending Validation',
+        'user_id' => $jsonResponse['user']['id'],
+        'client_id' => $oauthClient->id
     ]);
 });
 

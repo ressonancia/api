@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -11,6 +12,9 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(Authenticate::class);
+        $this->withoutMiddleware([
+            Authenticate::class,
+            EnsureEmailIsVerified::class
+        ]);
     }
 }
