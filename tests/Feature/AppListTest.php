@@ -2,6 +2,7 @@
 
 use App\Models\App;
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Http\Response;
 
 test('user can list apps', function () {
@@ -21,4 +22,10 @@ test('user needs to be logged in to list', function () {
     $this->withMiddleware(Authenticate::class);
 
     $this->getJson(route('api.apps.index'))->assertUnauthorized();
+});
+
+test('user needs to verify email to list', function () {
+    $this->withMiddleware(EnsureEmailIsVerified::class);
+
+    $this->getJson(route('api.apps.index'))->assertForbidden();
 });

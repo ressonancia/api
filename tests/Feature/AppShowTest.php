@@ -2,7 +2,9 @@
 
 use App\Models\App;
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 
 test('user can see a single app', function () {
     $app = App::factory()->create();
@@ -30,4 +32,11 @@ test('user needs to be logged in to show app', function () {
     $this->withMiddleware(Authenticate::class);
 
     $this->getJson(route('api.apps.show', 1))->assertUnauthorized();
+});
+
+test('user needs to be verify email to show app', function () {
+    $this->withMiddleware(EnsureEmailIsVerified::class);
+    $this->withoutMiddleware(SubstituteBindings::class);
+
+    $this->getJson(route('api.apps.show', 1))->assertForbidden();
 });

@@ -21,3 +21,5 @@ yarn-error.log
 /coverage
 supervisord.pid
 .rnd
+/.coverage
+--cache-directory

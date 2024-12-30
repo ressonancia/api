@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 test('user can create an app', function () {
-    
     $uuid = Str::uuid();
     $key = Str::random(20);
     $secret = Str::random(20);
@@ -49,4 +49,14 @@ test('user needs to be logged in to create app', function () {
         'app_name' => 'Batocera Cloud',
         'app_language_choice' => 'PHP'
     ])->assertUnauthorized();
+});
+
+
+test('user needs to to verify email to create app', function () {
+    $this->withMiddleware(EnsureEmailIsVerified::class);
+
+    $this->postJson(route('api.apps.store'), [
+        'app_name' => 'Batocera Cloud',
+        'app_language_choice' => 'PHP'
+    ])->assertForbidden();
 });

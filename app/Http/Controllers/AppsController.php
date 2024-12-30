@@ -10,17 +10,17 @@ use Illuminate\Support\Str;
 
 class AppsController extends Controller
 {
-    function index() : JsonResponse {
+    public function index() : JsonResponse {
         return response()->json(
-            App::paginate()
+            App::paginate(1000)
         );
     }
 
-    function show(App $app) : JsonResponse {
+    public function show(App $app) : JsonResponse {
         return response()->json($app);
     }
 
-    function store(CreateAppRequest $request, Str $stringSupport) : JsonResponse {
+    public function store(CreateAppRequest $request, Str $stringSupport) : JsonResponse {
         return response()->json(
             App::create([
                 'app_name' => $request->get('app_name'),

@@ -44,6 +44,18 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        DB::table('oauth_clients')->insert([
+            'name' => "Ressonance Personal Access Client",
+            'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2',
+            'provider' => null,
+            'redirect' => 'http://localhost',
+            'password_client' => 0,
+            'personal_access_client' => 1,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         App::factory()->times(20)->create();
     }
 }

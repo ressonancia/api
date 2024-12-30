@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | SPA Application URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by application to generate links to the SPA
+    | This is the interface SPA and not the Laravel backend application.
+    |
+    */
+
+    'spa_url' => env('APP_SPA_URL', 'http://localhost:5173/'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
