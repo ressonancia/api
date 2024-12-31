@@ -11,7 +11,7 @@ test('user can receive a reset password notificatoin', function () {
     Notification::fake();
 
     $response = $this->postJson(
-        route('api.password.email'),
+        route('password.email'),
         ['email' => $user->email]
     );
 
@@ -29,7 +29,7 @@ test('user can receive a reset password notificatoin', function () {
 
 test('user needs a valid emal', function () {
     $response = $this->postJson(
-        route('api.password.email')
+        route('password.email')
     );
     
     $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
@@ -39,7 +39,7 @@ test('user needs a valid emal', function () {
     ]);;
 
     $response = $this->postJson(
-        route('api.password.email'),
+        route('password.email'),
         ['email' => 'invalid-email']
     );
 

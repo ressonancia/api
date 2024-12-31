@@ -29,10 +29,10 @@ Route::middleware(['auth:api'])->group(function () {
 
 Route::middleware(['guest'])->group(function () {
     Route::post('/forgot-password', [ResetPasswordController::class, 'send'])
-        ->middleware('guest')
-        ->name('api.password.email');
+        ->name('password.email');
 
-    Route::post('password.reset')->name('password.reset');
+    Route::post('reset-password', [ResetPasswordController::class, 'reset'])    
+        ->name('password.reset');
 });
 
 Route::post('/account', [AccountController::class, 'store'])->name('api.account.store');
