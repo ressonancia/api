@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\App;
+use App\Models\User;
 use App\Ressonance\DatabaseApplicationProvider;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
@@ -57,6 +59,10 @@ class AppServiceProvider extends ServiceProvider
 
             return config('app.spa_url') . '/email-verification?'
                 . http_build_query(['route' => base64_encode($url)]);
+        });
+
+        ResetPassword::createUrlUsing(function (User $user, string $token) {
+            return config('app.spa_url') . '/reset-password?token='.$token;
         });
     }
 }
