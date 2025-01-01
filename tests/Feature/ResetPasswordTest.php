@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 
 test('user can change its password', function () {
@@ -12,6 +13,10 @@ test('user can change its password', function () {
 
     $token = Password::createToken($user);
 
+    Log::shouldReceive('info')
+        ->once()
+        ->with('Password Reseted For: ' . $user->email);
+    
     $response = $this->postJson(route('password.reset'), [
         'email' => $user->email,
         'token' => $token,
@@ -19,13 +24,35 @@ test('user can change its password', function () {
         'password_confirmation' => 'Pipoka123!',
     ]);
 
-    $response->assertStatus(200)->assertJson([
+    $response->assertStatus(Response::HTTP_OK)->assertJson([
         'message' => 'Password has changed'
     ]);
 
     $this->assertTrue(Hash::check('Pipoka123!', $user->fresh()->password));
 });
 
+test('user can not reset password with invalid token', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('milho'),
+    ]);
+
+    Log::shouldReceive('info')
+        ->once()
+        ->with('Password Reset Try With Invalid Token For: ' . $user->email);
+    
+    $response = $this->postJson(route('password.reset'), [
+        'email' => $user->email,
+        'token' => 'invelid-token',
+        'password' => 'Pipoka123!',
+        'password_confirmation' => 'Pipoka123!',
+    ]);
+
+    $response->assertStatus(Response::HTTP_BAD_REQUEST)->assertJson([
+        'message' => 'Invalid token'
+    ]);
+
+    $this->assertTrue(Hash::check('milho', $user->fresh()->password));
+})->only();
 
 test('user needs to give a valid token', function () {
     $this->postJson(route('password.reset'), [])
