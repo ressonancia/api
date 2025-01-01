@@ -52,7 +52,7 @@ test('user can not reset password with invalid token', function () {
     ]);
 
     $this->assertTrue(Hash::check('milho', $user->fresh()->password));
-})->only();
+});
 
 test('user needs to give a valid token', function () {
     $this->postJson(route('password.reset'), [])
