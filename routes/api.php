@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AppsController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
+    Route::post('/logout', [LogoutController::class, 'logout'])->name('api.logout');
 });
 
 Route::middleware(['guest'])->group(function () {
