@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 
-test('user can change its password', function () {
+test('user can reset its password', function () {
     $user = User::factory()->create([
         'password' => Hash::make('milho'),
     ]);

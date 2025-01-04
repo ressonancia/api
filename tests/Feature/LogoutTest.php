@@ -21,4 +21,4 @@ test('user can logout', function () {
     ])->postJson(route('api.logout'))->assertNoContent();
 
     expect(($user->tokens->every(fn($token) => $token->revoked)))->toBeTrue();
-})->only();
+});
