@@ -37,6 +37,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+    protected $appends = [
+        'avatar'
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -53,5 +57,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('Y-m-d\TH:i:sP');
+    }
+
+    public function getAvatarAttribute(): string
+    {
+        return "https://www.gravatar.com/avatar/"
+            . hash( "sha256", strtolower( trim( $this->email ) ) ) . "?s=40";
     }
 }
