@@ -36,4 +36,9 @@ class AppsController extends Controller
             Response::HTTP_CREATED
         );
     }
+
+    public function destroy(App $app) : Response {
+        $app->delete();
+        return response()->noContent();
+    }
 }
