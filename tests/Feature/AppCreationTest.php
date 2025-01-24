@@ -6,6 +6,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 test('user can create an app', function () {
+    $user = $this->login();
+
     $uuid = Str::uuid();
     $key = Str::random(20);
     $secret = Str::random(20);
@@ -33,6 +35,7 @@ test('user can create an app', function () {
     $response->assertStatus(Response::HTTP_CREATED);
 
     $this->assertDatabaseHas('apps', [
+        'user_id' => $user->id,
         'app_id' => Str::lower($uuid),
         'app_key' => Str::lower($key),
         'app_secret' => Str::lower($secret),
