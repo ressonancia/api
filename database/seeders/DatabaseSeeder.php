@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'jacob@l30.space',
         ]);
 
-        User::factory()->create([
+        $user = User::factory()->create([
             'name' => 'Zaphod Beeblebrox',
             'email' => 'zaphod@l30.space',
             'password' => bcrypt('secret')
@@ -56,6 +56,8 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        App::factory()->times(20)->create();
+        App::factory()->times(20)->create([
+            'user_id' => $user->id
+        ]);
     }
 }
