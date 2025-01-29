@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
-use Laravel\Reverb\ServerProviderManager;
+use Laravel\Reverb\ApplicationManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        resolve(ServerProviderManager::class)->extend('database', function () {
+        resolve(ApplicationManager::class)->extend('database', function () {
             return new DatabaseApplicationProvider(
                 App::get()->collect()
             );
