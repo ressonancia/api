@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAppRequest;
+use App\Jobs\RestartReverb;
 use App\Models\App;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -27,19 +28,23 @@ class AppsController extends Controller
     }
 
     public function store(CreateAppRequest $request, Str $stringSupport) : JsonResponse {
+        $createdApp = App::create([
+            'user_id' => Auth::user()->id,
+            'app_name' => $request->get('app_name'),
+            'app_language_choice' => $request->get('app_language_choice'),
+            'app_id' => (string) $stringSupport->uuid(),
+            'app_key' => $stringSupport->lower(
+                $stringSupport->random(20)
+            ),
+            'app_secret' => $stringSupport->lower(
+                $stringSupport->random(20)
+            ),
+        ]);
+
+        RestartReverb::dispatch();
+
         return response()->json(
-            App::create([
-                'user_id' => Auth::user()->id,
-                'app_name' => $request->get('app_name'),
-                'app_language_choice' => $request->get('app_language_choice'),
-                'app_id' => (string) $stringSupport->uuid(),
-                'app_key' => $stringSupport->lower(
-                    $stringSupport->random(20)
-                ),
-                'app_secret' => $stringSupport->lower(
-                    $stringSupport->random(20)
-                ),
-            ]),
+            $createdApp,
             Response::HTTP_CREATED
         );
     }
@@ -50,6 +55,8 @@ class AppsController extends Controller
         }
 
         $app->delete();
+        RestartReverb::dispatch();
+
         return response()->noContent();
     }
 }

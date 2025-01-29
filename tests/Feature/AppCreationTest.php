@@ -1,11 +1,15 @@
 <?php
 
+use App\Jobs\RestartReverb;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 
 test('user can create an app', function () {
+    Queue::fake();
+
     $user = $this->login();
 
     $uuid = Str::uuid();
@@ -42,6 +46,8 @@ test('user can create an app', function () {
         'app_name' => 'Batocera Cloud',
         'app_language_choice' => 'PHP',
     ]);
+
+    Queue::assertPushed(RestartReverb::class);
 });
 
 

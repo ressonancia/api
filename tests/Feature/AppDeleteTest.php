@@ -1,10 +1,13 @@
 <?php
 
+use App\Jobs\RestartReverb;
 use App\Models\App;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Queue;
 
 test('user can delete an app', function () {
+    Queue::fake();
     $user = $this->login();
 
     $app = App::factory()->create([
@@ -28,6 +31,7 @@ test('user can delete an app', function () {
         'deleted_at' => null
     ]);
 
+    Queue::assertPushed(RestartReverb::class);
 });
 
 test('user cannot delete an app from another user', function () {
