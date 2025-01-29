@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 
 pest()->extend(Tests\TestCase::class);
 
-It('can call Artisan command to restart reverb', function () {
+It('can restart reverb', function () {
     
     Carbon::setTestNow();
 
