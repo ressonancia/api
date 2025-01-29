@@ -1,13 +1,21 @@
 <?php
 
 use App\Jobs\RestartReverb;
-use Illuminate\Support\Facades\Artisan;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+
+pest()->extend(Tests\TestCase::class);
 
 It('can call Artisan command to restart reverb', function () {
     
-    Artisan::shouldReceive('call')
+    Carbon::setTestNow();
+
+    Cache::shouldReceive('forever')
         ->once()
-        ->with('reverb:restart');
+        ->with(
+            'laravel:reverb:restart',
+            Carbon::now()->getTimestamp()
+        );
 
     $job = new RestartReverb();
     $job->handle();

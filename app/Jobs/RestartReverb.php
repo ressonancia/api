@@ -2,12 +2,13 @@
 
 namespace App\Jobs;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 class RestartReverb implements ShouldQueue
 {
@@ -26,6 +27,9 @@ class RestartReverb implements ShouldQueue
      */
     public function handle(): void
     {
-        Artisan::call('reverb:restart');
+        Cache::forever(
+            'laravel:reverb:restart',
+            Carbon::now()->getTimestamp()
+        );
     }
 }
