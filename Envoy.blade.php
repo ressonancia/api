@@ -4,6 +4,7 @@
     update-code
     install-dependencies
 	run-migrations
+    restart-reverb
 @endstory
  
 @task('update-code')
@@ -19,4 +20,9 @@
 @task('run-migrations')
     cd /var/www/html/ressonance-api/
     php artisan migrate --force
+@endtask
+
+@task('restart-reverb')
+    cd /var/www/html/ressonance-api/
+    php artisan reverb:restart
 @endtask
