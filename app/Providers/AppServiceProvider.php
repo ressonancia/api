@@ -62,7 +62,7 @@ class AppServiceProvider extends ServiceProvider
             );
 
             return config('app.spa_url') . '/email-verification?'
-                . http_build_query(['route' => base64_encode($url)]);
+                . http_build_query(['route' => urlencode(base64_encode($url))]);
         });
 
         ResetPassword::createUrlUsing(function (User $user, string $token) {
