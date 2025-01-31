@@ -9,6 +9,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
@@ -60,6 +61,10 @@ class AppServiceProvider extends ServiceProvider
                     'hash' => sha1($notifiable->getEmailForVerification()),
                 ]
             );
+
+            Log::info($url);
+            Log::info(config('app.spa_url') . '/email-verification?'
+            . http_build_query(['route' => urlencode(base64_encode($url))]));
 
             return config('app.spa_url') . '/email-verification?'
                 . http_build_query(['route' => urlencode(base64_encode($url))]);
