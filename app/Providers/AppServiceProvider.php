@@ -62,10 +62,6 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
 
-            Log::info($url);
-            Log::info(config('app.spa_url') . '/email-verification?'
-                . http_build_query(['route' => rtrim(strtr(base64_encode($url), '+/', '-_'), '=')]));
-
             return config('app.spa_url') . '/email-verification?'
                 . http_build_query(['route' => rtrim(strtr(base64_encode($url), '+/', '-_'), '=')]);
         });
