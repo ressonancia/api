@@ -9,9 +9,9 @@ use App\Http\Controllers\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('too-much-secret', function () {
-    phpinfo();
-});
+// Route::get('too-much-secret', function () {
+//     phpinfo();
+// });
 
 Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::get('/apps', [AppsController::class, 'index'])->name('api.apps.index');
