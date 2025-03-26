@@ -4,12 +4,13 @@ namespace App\Providers;
 
 use App\Models\App;
 use App\Models\User;
+use App\Ressonance\Console\Commands\StartServer;
 use App\Ressonance\DatabaseApplicationProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Console\Application;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
@@ -69,5 +70,13 @@ class AppServiceProvider extends ServiceProvider
         ResetPassword::createUrlUsing(function (User $user, string $token) {
             return config('app.spa_url') . '/reset-password?token='.$token;
         });
+
+        if ($this->app->runningInConsole()) {
+            Application::starting(function ($artisan) {
+                $artisan->resolveCommands([
+                    StartServer::class,
+                ]);
+            });
+        }
     }
 }
