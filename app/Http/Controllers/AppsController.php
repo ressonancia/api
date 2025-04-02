@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAppRequest;
-use App\Jobs\RestartReverb;
+use App\Jobs\RefreshReverb;
 use App\Models\App;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -41,7 +41,7 @@ class AppsController extends Controller
             ),
         ]);
 
-        RestartReverb::dispatch();
+        RefreshReverb::dispatch();
 
         return response()->json(
             $createdApp,
@@ -55,7 +55,7 @@ class AppsController extends Controller
         }
 
         $app->delete();
-        RestartReverb::dispatch();
+        RefreshReverb::dispatch();
 
         return response()->noContent();
     }

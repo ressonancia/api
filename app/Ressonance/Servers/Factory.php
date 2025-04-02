@@ -10,12 +10,12 @@ use Symfony\Component\Routing\RouteCollection;
 
 class Factory extends ReverbFactory
 {
-    protected static function pusherRoutes(): RouteCollection
+    protected static function pusherRoutes(string $path): RouteCollection
     {
 		
-        $routes = parent::pusherRoutes();
+        $routes = parent::pusherRoutes($path);
 
-        $routes->add('refresh_applications', Route::get('/refresh-applications', new RefreshApplicationsController));
+        $routes->add('refresh_applications', Route::post('/refresh-applications', new RefreshApplicationsController));
         $routes->add('report', Route::get('/report', new ReportController));
 
         return $routes;

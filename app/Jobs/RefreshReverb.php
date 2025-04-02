@@ -9,8 +9,10 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-class RestartReverb implements ShouldQueue
+class RefreshReverb implements ShouldQueue
 {
     use Queueable;
 
@@ -27,9 +29,7 @@ class RestartReverb implements ShouldQueue
      */
     public function handle(): void
     {
-        Cache::forever(
-            'laravel:reverb:restart',
-            Carbon::now()->getTimestamp()
-        );
+        $response = Http::post(config('ressonance.refresh_reverb_url'));
+        Log::info('request endpoint response:' . $response->body());
     }
 }
