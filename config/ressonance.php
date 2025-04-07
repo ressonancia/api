@@ -12,5 +12,5 @@ return [
     |
     */
 
-    'refresh_reverb_url' => env('REFRESH_REVERV_URL', 'http://localhost:8080/refresh-applications'),
+    'refresh_reverb_url' => env('REFRESH_REVERB_URL', 'http://localhost:8080/refresh-applications'),
 ];
