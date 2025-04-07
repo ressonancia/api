@@ -1,23 +1,17 @@
 <?php
 
-use App\Jobs\RestartReverb;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
+use App\Jobs\RefreshReverb;
+use Illuminate\Support\Facades\Log;
 
 pest()->extend(Tests\TestCase::class);
 
-It('can restart reverb', function () {
-    
-    Carbon::setTestNow();
+It('can refresh reverb applications', function () {
+    $this->mockRefreshAppsRequest();
 
-    Cache::shouldReceive('forever')
+    Log::shouldReceive('info')
         ->once()
-        ->with(
-            'laravel:reverb:restart',
-            Carbon::now()->getTimestamp()
-        );
+        ->with('request endpoint response:{"status":"Applications Refreshed"}');
 
-    $job = new RestartReverb();
+    $job = new RefreshReverb();
     $job->handle();
-
 });

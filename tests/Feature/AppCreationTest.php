@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\RestartReverb;
+use App\Jobs\RefreshReverb;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Http\Response;
@@ -47,7 +47,7 @@ test('user can create an app', function () {
         'app_language_choice' => 'PHP',
     ]);
 
-    Queue::assertPushed(RestartReverb::class);
+    Queue::assertPushed(RefreshReverb::class);
 });
 
 

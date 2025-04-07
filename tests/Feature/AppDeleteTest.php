@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\RestartReverb;
+use App\Jobs\RefreshReverb;
 use App\Models\App;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
@@ -31,7 +31,7 @@ test('user can delete an app', function () {
         'deleted_at' => null
     ]);
 
-    Queue::assertPushed(RestartReverb::class);
+    Queue::assertPushed(RefreshReverb::class);
 });
 
 test('user cannot delete an app from another user', function () {
