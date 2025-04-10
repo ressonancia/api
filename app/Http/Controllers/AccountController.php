@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
@@ -26,5 +27,19 @@ class AccountController extends Controller
             ],
             Response::HTTP_CREATED
         );
+    }
+
+    public function destroy() : JsonResponse {
+        
+        $user = Auth::user();
+
+        if ($user->apps()->count()) {
+            return response()->json([
+                'message' => 'The user should delete all apps before deleting the account'
+            ], Response::HTTP_PRECONDITION_FAILED);
+        }
+
+        $user->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

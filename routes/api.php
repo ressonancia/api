@@ -18,6 +18,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::get('/apps/{app}', [AppsController::class, 'show'])->name('api.apps.show');
     Route::post('/apps', [AppsController::class, 'store'])->name('api.apps.store');
     Route::delete('/apps/{app}', [AppsController::class, 'destroy'])->name('api.apps.destroy');
+    Route::delete('/delete-account', [AccountController::class, 'destroy'])->name('api.users.destroy');
 });
 
 Route::middleware(['auth:api'])->group(function () {

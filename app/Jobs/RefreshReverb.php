@@ -29,7 +29,13 @@ class RefreshReverb implements ShouldQueue
      */
     public function handle(): void
     {
+        if (! config('ressonance.websocket_integration', true)) {
+            Log::info('Websocket integration disabled by env');
+            return;
+        }
+
         $response = Http::post(config('ressonance.refresh_reverb_url'));
         Log::info('request endpoint response:' . $response->body());
+        return;   
     }
 }
