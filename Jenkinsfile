@@ -36,7 +36,7 @@ pipeline {
                         sh 'composer install --no-interaction --prefer-dist --ansi'
                     }
                 }
-                stage('Test Ressonance'){
+                stage('Test Ressonance API'){
                     steps {
                         sh  'cp .env.example .env'
                         sh  'cp phpunit.ci.xml phpunit.xml'
@@ -44,20 +44,20 @@ pipeline {
                         sh  'php artisan test'
                     }
                 }
+                stage('Deploy Resonance API') {
+                    steps {
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
+                            sh '''
+                                chmod 600 "$SSH_KEY"
+                                eval "$(ssh-agent -s)"
+                                ssh-add "$SSH_KEY"
+                                ./vendor/bin/envoy run deploy
+                            '''
+                        }
+                    }
+                }
             }
         }
-        // stage('Deploy Resonance') {
-        //     steps {
-        //         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
-        //             sh '''
-        //                 chmod 600 "$SSH_KEY"
-        //                 eval "$(ssh-agent -s)"
-        //                 ssh-add "$SSH_KEY"
-        //                 ./vendor/bin/envoy run deploy
-        //             '''
-        //         }
-        //     }
-        // }
     }
     post {
         always {
