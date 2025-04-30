@@ -19,6 +19,7 @@ pipeline {
                         mysql:8.0
 
                     echo "Waiting for MySQL to be ready..."
+                    sleep 10
                     for i in {1..30}; do
                         if docker exec mysql mysqladmin ping -uroot --silent; then
                             echo "MySQL is ready"
