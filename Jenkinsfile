@@ -41,6 +41,7 @@ pipeline {
                         sh  'cp .env.example .env'
                         sh  'cp phpunit.ci.xml phpunit.xml'
                         sh  'php artisan key:generate'
+                        sh  'php artisan passport:keys --silent --ansi'
                         sh  'php artisan test'
                     }
                 }
