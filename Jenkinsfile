@@ -1,7 +1,7 @@
 pipeline {
     environment {
         COMPOSER_NO_INTERACTION = '1'
-		DOCKER_NETWORK = "ressonance_api_$BUILD_ID"
+        DOCKER_NETWORK = "ressonance_api_$BUILD_ID"
     }
     stages {
         stage('Prepare Network and MySQL') {
@@ -26,22 +26,23 @@ pipeline {
                 '''
             }
         }
-        
-        stages {
+        stage('Run Tests and Deploy') {
             agent {
                 docker {
                     image 'convenia/php-full:latest'
                     args "--network ressonance_api_$BUILD_ID"
                 }
             }
-            stage('Install dependencies') {
-                steps {
-                    sh 'composer install --no-interaction --prefer-dist'
+            stages {
+                stage('Install dependencies') {
+                    steps {
+                        sh 'composer install --no-interaction --prefer-dist'
+                    }
                 }
-            }
-            stage('Test Ressonance'){
-                steps {
-                    sh  'php artisan test'
+                stage('Test Ressonance'){
+                    steps {
+                        sh  'php artisan test'
+                    }
                 }
             }
         }
@@ -57,5 +58,13 @@ pipeline {
         //         }
         //     }
         // }
+    }
+    post {
+        always {
+            sh '''
+                docker rm -f mysql-test || true
+                docker network rm "$DOCKER_NETWORK" || true
+            '''
+        }
     }
 }
