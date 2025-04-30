@@ -20,7 +20,7 @@ pipeline {
 
                     echo "Waiting for MySQL to be ready..."
                     for i in {1..30}; do
-                        if docker exec mysql-test mysqladmin ping -uroot --silent; then
+                        if docker exec mysql mysqladmin ping -uroot --silent; then
                             echo "MySQL is ready"
                             break
                         fi
