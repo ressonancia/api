@@ -1,4 +1,7 @@
 pipeline {
+    agent {
+        node 'local-shell'
+    }
     environment {
         COMPOSER_NO_INTERACTION = '1'
         DOCKER_NETWORK = "ressonance_api_$BUILD_ID"
