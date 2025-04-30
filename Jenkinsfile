@@ -18,15 +18,8 @@ pipeline {
                         -e MYSQL_DATABASE=ressonance \
                         mysql:8.0
 
-                    echo "Waiting for MySQL to be ready..."
-                    sleep 10
-                    for i in {1..30}; do
-                        if docker exec mysql mysqladmin ping -uroot --silent; then
-                            echo "MySQL is ready"
-                            break
-                        fi
-                        sleep 1
-                    done
+                    echo "Waiting 5 seconds for MySQL to be ready..."
+                    sleep 5
                 '''
             }
         }
@@ -46,7 +39,8 @@ pipeline {
                 stage('Test Ressonance'){
                     steps {
                         sh  'cp .env.example .env'
-                        sh  'cp phpunit.ci.xml phpunit.xml '
+                        sh  'cp phpunit.ci.xml phpunit.xml'
+                        sh  'php artisan key:generate'
                         sh  'php artisan test'
                     }
                 }
