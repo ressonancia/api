@@ -39,7 +39,7 @@ pipeline {
             stages {
                 stage('Install dependencies') {
                     steps {
-                        sh 'composer install --no-interaction --prefer-dist'
+                        sh 'composer install --no-interaction --prefer-dist --ansi'
                     }
                 }
                 stage('Test Ressonance'){
