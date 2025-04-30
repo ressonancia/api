@@ -1,10 +1,4 @@
 pipeline {
-    agent {
-        docker {
-			image 'convenia/php-full:latest'
-			args "--network ressonance_api_$BUILD_ID"
-		}
-    }
     environment {
         COMPOSER_NO_INTERACTION = '1'
 		DOCKER_NETWORK = "ressonance_api_$BUILD_ID"
@@ -32,14 +26,23 @@ pipeline {
                 '''
             }
         }
-        stage('Install dependencies') {
-            steps {
-                sh 'composer install --no-interaction --prefer-dist'
+        
+        stages {
+            agent {
+                docker {
+                    image 'convenia/php-full:latest'
+                    args "--network ressonance_api_$BUILD_ID"
+                }
             }
-        }
-        stage('Test Ressonance'){
-            steps {
-                sh  'php artisan test'
+            stage('Install dependencies') {
+                steps {
+                    sh 'composer install --no-interaction --prefer-dist'
+                }
+            }
+            stage('Test Ressonance'){
+                steps {
+                    sh  'php artisan test'
+                }
             }
         }
         // stage('Deploy Resonance') {
