@@ -38,10 +38,9 @@ pipeline {
                 }
                 stage('Test Ressonance'){
                     steps {
-                        sh  'echo test'
-                        // sh  'cp .env.example .env'
-                        // sh  'cp phpunit.ci.xml phpunit.xml'
-                        // sh  'php artisan key:generate'
+                        sh  'cp .env.example .env'
+                        sh  'cp phpunit.ci.xml phpunit.xml'
+                        sh  'php artisan key:generate'
                         // sh  'php artisan passport:keys --silent --ansi'
                         // sh  'php artisan test'
                     }
