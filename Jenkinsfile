@@ -44,6 +44,8 @@ pipeline {
                 }
                 stage('Test Ressonance'){
                     steps {
+                        sh  'cp .env.example .env'
+                        sh  'cp phpunit.ci.xml phpunit.xml '
                         sh  'php artisan test'
                     }
                 }
