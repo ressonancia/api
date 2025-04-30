@@ -5,12 +5,16 @@ namespace Tests;
 use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Passport;
 
 abstract class TestCase extends BaseTestCase
 {
+
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
