@@ -65,7 +65,7 @@ pipeline {
     post {
         always {
             sh '''
-                docker rm -f mysql-test || true
+                docker rm -f mysql || true
                 docker network rm "$DOCKER_NETWORK" || true
             '''
         }
