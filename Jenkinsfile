@@ -27,7 +27,7 @@ pipeline {
             agent {
                 docker {
                     image 'convenia/php-full:latest'
-                    args "--network ressonance_api_$BUILD_ID"
+                    args "--network ressonance_api_$BUILD_ID  -v /etc/passwd:/etc/passwd:ro"
                 }
             }
             stages {
@@ -45,9 +45,6 @@ pipeline {
                     }
                 }
                 stage('Deploy Resonance API') {
-                    environment {
-                        SSH_KEY_CONTENT = credentials('ressonance-private-key')
-                    }
                     steps {
                         sh '''
                             ./vendor/bin/envoy run deploy
