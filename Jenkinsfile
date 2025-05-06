@@ -48,7 +48,7 @@ pipeline {
                     steps {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
                             sh '''
-                                useradd -u 109 -m jenkins
+                                adduser --uid 109 --disabled-password --gecos "" jenkins
                                 id
                                 which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
                                 chmod 600 "$SSH_KEY"
