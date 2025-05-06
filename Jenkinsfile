@@ -48,7 +48,7 @@ pipeline {
                     agent {
                         docker {
                             image 'convenia/php-full:latest'
-                            args "--user app"
+                            args "-u 1000"
                         }
                     }
                     steps {
