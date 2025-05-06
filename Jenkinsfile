@@ -45,10 +45,15 @@ pipeline {
                     }
                 }
                 stage('Deploy Resonance API') {
+                    agent {
+                        docker {
+                            image 'convenia/php-full:latest'
+                            args "--user app"
+                        }
+                    }
                     steps {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
                             sh '''
-                                adduser --uid 109 --disabled-password --gecos "" jenkins
                                 id
                                 which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
                                 chmod 600 "$SSH_KEY"
