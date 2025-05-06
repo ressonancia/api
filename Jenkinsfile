@@ -50,6 +50,7 @@ pipeline {
                     }
                     steps {
                         sh '''
+                            printenv
                             echo "$SSH_KEY_CONTENT" | tr -d '\r' > /tmp/deploy_key
                             chmod 600 /tmp/deploy_key
                             eval "$(ssh-agent -s)"
