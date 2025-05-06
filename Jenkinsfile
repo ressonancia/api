@@ -47,12 +47,13 @@ pipeline {
                 stage('Deploy Resonance API') {
                     steps {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
-                            sh '''
-                                chmod 600 "$SSH_KEY"
-                                eval "$(ssh-agent -s)"
-                                ssh-add "$SSH_KEY"
-                                ./vendor/bin/envoy run deploy -vvv
-                            '''
+                            // sh '''
+                            //     chmod 600 "$SSH_KEY"
+                            //     eval "$(ssh-agent -s)"
+                            //     ssh-add "$SSH_KEY"
+                            //     ./vendor/bin/envoy run deploy -vvv
+                            // '''
+                            sh 'ssh ressonance_api@10.0.1.225 "ls -la"'
                         }
                     }
                 }
