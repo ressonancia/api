@@ -50,7 +50,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                            echo "$SSH_KEY_CONTENT" > /tmp/deploy_key
+                            echo "$SSH_KEY_CONTENT" | tr -d '\r' > /tmp/deploy_key
                             chmod 600 /tmp/deploy_key
                             eval "$(ssh-agent -s)"
                             ssh-add /tmp/deploy_key
