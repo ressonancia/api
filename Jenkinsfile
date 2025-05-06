@@ -48,10 +48,11 @@ pipeline {
                     steps {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
                             sh '''
+                                id
                                 which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
                                 chmod 600 "$SSH_KEY"
                                 eval "$(ssh-agent -s)"
-                                echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+                                ssh-add "$SSH_KEY"
                                 ssh ressonance_api@10.0.1.225 "ls -la"
                             '''
                         }
