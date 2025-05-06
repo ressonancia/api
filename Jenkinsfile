@@ -27,7 +27,7 @@ pipeline {
             agent {
                 docker {
                     image 'convenia/php-full:latest'
-                    args "--network ressonance_api_$BUILD_ID --user jenkins"
+                    args "--network ressonance_api_$BUILD_ID --user app"
                 }
             }
             stages {
