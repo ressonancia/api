@@ -45,28 +45,18 @@ pipeline {
                     }
                 }
                 stage('Deploy Resonance API') {
-                    agent { node 'local-shell' }
+                    environment {
+                        SSH_KEY_CONTENT = credentials('ressonance-private-key')
+                    }
                     steps {
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
-                            sh '''
-                                chmod 600 "$SSH_KEY"
-
-                                docker run --rm \
-                                    --rm
-                                    -u app \
-                                    -v "$SSH_KEY:/root/.ssh/id_rsa:ro" \
-                                    -v "$PWD:/app" \
-                                    -w /app \
-                                    -e SSH_AUTH_SOCK=/ssh-agent \
-                                    -v $SSH_AUTH_SOCK:/ssh-agent \
-                                    convenia/php-full:latest \
-                                    sh -c '
-                                        eval "$(ssh-agent -s)" &&
-                                        ssh-add /root/.ssh/id_rsa &&
-                                        ./vendor/bin/envoy run deploy
-                                    '
-                            '''
-                        }
+                        sh '''
+                            echo "$SSH_KEY_CONTENT" > /tmp/deploy_key
+                            chmod 600 /tmp/deploy_key
+                            eval "$(ssh-agent -s)"
+                            ssh-add /tmp/deploy_key
+                            ./vendor/bin/envoy run deploy
+                            rm -f /tmp/deploy_key
+                        '''
                     }
                 }
             }
