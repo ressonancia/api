@@ -45,6 +45,12 @@ pipeline {
                     }
                 }
                 stage('Deploy Resonance API') {
+                    agent {
+                        docker {
+                            image 'convenia/php-full:latest'
+                            args "--user app"
+                        }
+                    }
                     steps {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
                             sh '''
