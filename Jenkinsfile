@@ -50,11 +50,6 @@ pipeline {
                     }
                     steps {
                         sh '''
-                            printenv
-                            echo "$SSH_KEY_CONTENT" | tr -d '\r' > /tmp/deploy_key
-                            chmod 600 /tmp/deploy_key
-                            eval "$(ssh-agent -s)"
-                            ssh-add /tmp/deploy_key
                             ./vendor/bin/envoy run deploy
                             rm -f /tmp/deploy_key
                         '''
