@@ -51,7 +51,7 @@ pipeline {
                                 chmod 600 "$SSH_KEY"
                                 eval "$(ssh-agent -s)"
                                 ssh-add "$SSH_KEY"
-                                ./vendor/bin/envoy run deploy
+                                ./vendor/bin/envoy run deploy -vvv
                             '''
                         }
                     }
