@@ -45,21 +45,13 @@ pipeline {
                     }
                 }
                 stage('Deploy Resonance API') {
-                    agent {
-                        docker {
-                            image 'convenia/php-full:latest'
-                            args "-u 1000"
-                        }
-                    }
                     steps {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ressonance-private-key', keyFileVariable: 'SSH_KEY')]) {
                             sh '''
-                                id
-                                which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
                                 chmod 600 "$SSH_KEY"
                                 eval "$(ssh-agent -s)"
                                 ssh-add "$SSH_KEY"
-                                ssh ressonance_api@10.0.1.225 "ls -la"
+                                ./vendor/bin/envoy run deploy
                             '''
                         }
                     }
