@@ -5,6 +5,7 @@
     install-dependencies
 	run-migrations
     restart-reverb
+    restart-pulse
 @endstory
  
 @task('update-code')
@@ -25,4 +26,9 @@
 @task('restart-reverb')
     cd /var/www/html/ressonance-api/
     php artisan reverb:restart
+@endtask
+
+@task('restart-pulse')
+    cd /var/www/html/ressonance-api/
+    php artisan pulse:restart
 @endtask

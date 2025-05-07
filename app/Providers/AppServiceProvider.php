@@ -11,10 +11,12 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Console\Application;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Laravel\Reverb\ApplicationManager;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -78,5 +80,13 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             });
         }
+
+        Gate::define('viewPulse', function (?User $user) {
+            $clientIp = request()->ip() ?? '';
+            return IpUtils::checkIp(
+                $clientIp,
+                config('pulse.admin_ips')
+            );
+        });
     }
 }
