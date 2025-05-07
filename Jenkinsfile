@@ -46,10 +46,7 @@ pipeline {
                 }
                 stage('Deploy Resonance API') {
                     steps {
-                        sh '''
-                            ./vendor/bin/envoy run deploy
-                            rm -f /tmp/deploy_key
-                        '''
+                        sh './vendor/bin/envoy run deploy'
                     }
                 }
             }
