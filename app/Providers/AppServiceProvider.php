@@ -6,6 +6,7 @@ use App\Models\App;
 use App\Models\User;
 use App\Ressonance\Console\Commands\StartServer;
 use App\Ressonance\DatabaseApplicationProvider;
+use App\Ressonance\DynamicDatabaseApplicationProxyProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Console\Application;
@@ -38,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
         }
 
         resolve(ApplicationManager::class)->extend('database', function () {
+            return new DynamicDatabaseApplicationProxyProvider(collect());
+        });
+
+        $this->app->singleton(DatabaseApplicationProvider::class, function () {
             return new DatabaseApplicationProvider(
                 App::get()->collect()
             );
