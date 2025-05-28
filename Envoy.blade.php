@@ -32,3 +32,13 @@
     cd /var/www/html/ressonance-api/
     php artisan pulse:restart
 @endtask
+
+@task('show-logs')
+    cd /var/www/html/ressonance-api/
+    cat storage/logs/laravel.log
+@endtask
+
+@task('tail-logs')
+    cd /var/www/html/ressonance-api/
+    tail -f storage/logs/laravel.log
+@endtask
