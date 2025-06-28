@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.9",
+        "laravel/nightwatch": "^1.9",
         "laravel/passport": "^12.0",
         "laravel/pulse": "^1.4",
         "laravel/reverb": "^1.0",
