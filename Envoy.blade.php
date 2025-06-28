@@ -1,4 +1,4 @@
-@servers(['web' => ['ressonance_api@10.0.1.225']])
+@servers(['web' => ['ressonance_api@10.0.0.136']])
  
 @story('deploy')
     update-code
