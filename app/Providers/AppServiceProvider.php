@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        Passport::ignoreRoutes();
+
         if (! config('ressonance.self_hosted')) {
             $this->app->register(CloudServiceProvider::class);
         }
