@@ -29,4 +29,20 @@ return [
         'RESSONANCE_WEBSOCKET_INTEGRATION_ENABLED',
         true
     ),
+
+	/*
+    |--------------------------------------------------------------------------
+    | Toggle self hosted mode
+    |--------------------------------------------------------------------------
+    |
+    | Ressonance is an open source project that can be self hosted
+    | But also have a cloud hosted version for a affordable price
+    | This configuration toggle the self hosted and cloud features
+    |
+    */
+
+    'self_hosted' => env(
+        'RESSONANCE_SELF_HOSTED',
+        true
+    ),
 ];
