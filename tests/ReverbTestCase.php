@@ -2,15 +2,14 @@
 
 namespace Tests;
 
+use App\Ressonance\Servers\Factory;
 use Illuminate\Support\Str;
 use Laravel\Reverb\Servers\Reverb\Contracts\PubSubProvider;
-use App\Ressonance\Servers\Factory;
 use React\Async\SimpleFiber;
 use React\EventLoop\Loop;
 use React\Http\Browser;
 use React\Promise\PromiseInterface;
 use ReflectionObject;
-
 
 class ReverbTestCase extends TestCase
 {

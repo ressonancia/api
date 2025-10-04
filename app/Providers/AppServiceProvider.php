@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (!config('ressonance.self_hosted')) {
+        if (! config('ressonance.self_hosted')) {
             $this->app->register(CloudServiceProvider::class);
         }
     }
@@ -58,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('viewPulse', function (?User $user) {
             $clientIp = request()->ip() ?? '';
+
             return IpUtils::checkIp(
                 $clientIp,
                 config('pulse.admin_ips')

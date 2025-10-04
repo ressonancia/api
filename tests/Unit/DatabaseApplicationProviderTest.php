@@ -18,7 +18,7 @@ beforeEach(function () {
     );
 });
 
-it('can find an application by any attribute', function () {    
+it('can find an application by any attribute', function () {
     $firstApp = $this->appsCollection->first();
     $firstFoundApp = $this->databaseApplicationProvider->find('app_id', $firstApp->app_id);
 
@@ -28,20 +28,20 @@ it('can find an application by any attribute', function () {
     expect($firstFoundApp->secret())->toEqual($firstApp->app_secret);
     expect($firstFoundApp)->toBeInstanceOf(Application::class);
     expect($secondFoundApp->secret())->toEqual($secondApp->app_secret);
-    expect($secondFoundApp)->toBeInstanceOf(Application::class); 
+    expect($secondFoundApp)->toBeInstanceOf(Application::class);
 });
 
-it('throws an exception if app is not found', function () {    
+it('throws an exception if app is not found', function () {
     $this->databaseApplicationProvider->find('app_id', 'unknown');
 })->throws(InvalidApplication::class);
 
-it('can retrieve all applications', function () {    
+it('can retrieve all applications', function () {
     $applications = $this->databaseApplicationProvider->all();
 
     expect($applications)->toContainOnlyInstancesOf(Application::class);
 });
 
-it('can find by ID', function () {    
+it('can find by ID', function () {
     $app = $this->appsCollection->first();
     $found = $this->databaseApplicationProvider->findById($app->app_id);
 
@@ -49,7 +49,7 @@ it('can find by ID', function () {
     expect($found)->toBeInstanceOf(Application::class);
 });
 
-it('can find by key', function () {    
+it('can find by key', function () {
     $app = $this->appsCollection->first();
     $found = $this->databaseApplicationProvider->findByKey($app->app_key);
 

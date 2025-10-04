@@ -14,7 +14,7 @@ test('user can receive a reset password notificatoin', function () {
 
     Log::shouldReceive('info')
         ->once()
-        ->with('Password Reset Sent to: ' . $user->email);
+        ->with('Password Reset Sent to: '.$user->email);
 
     $response = $this->postJson(
         route('password.email'),
@@ -30,7 +30,7 @@ test('user can receive a reset password notificatoin', function () {
 
     expect(
         call_user_func(ResetPassword::$createUrlCallback, $user, 'fake-token')
-    )->tobe(config('app.spa_url') . '/reset-password?token=fake-token');
+    )->tobe(config('app.spa_url').'/reset-password?token=fake-token');
 });
 
 test('unregistered user just does not receive the email', function () {
@@ -38,7 +38,7 @@ test('unregistered user just does not receive the email', function () {
 
     Log::shouldReceive('info')
         ->once()
-        ->with('Password Reset not Sent: ' . PasswordBroker::INVALID_USER);
+        ->with('Password Reset not Sent: '.PasswordBroker::INVALID_USER);
 
     $response = $this->postJson(
         route('password.email'),
@@ -57,12 +57,12 @@ test('user needs a valid emal', function () {
     $response = $this->postJson(
         route('password.email')
     );
-    
+
     $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-    ->assertJsonValidationErrors(['email'])
-    ->assertJsonFragment([
-        'email' => ['The email field is required.'],
-    ]);;
+        ->assertJsonValidationErrors(['email'])
+        ->assertJsonFragment([
+            'email' => ['The email field is required.'],
+        ]);
 
     $response = $this->postJson(
         route('password.email'),
@@ -73,5 +73,5 @@ test('user needs a valid emal', function () {
         ->assertJsonValidationErrors(['email'])
         ->assertJsonFragment([
             'email' => ['The email field must be a valid email address.'],
-        ]);;
+        ]);
 });

@@ -11,7 +11,7 @@ test('user can see a single app', function () {
     $user = $this->login();
 
     $app = App::factory()->create([
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $response = $this->getJson(route('api.apps.show', $app->id));
@@ -30,7 +30,7 @@ test('user cannot see a apps from another user', function () {
     $anotherUser = User::factory()->create();
 
     $app = App::factory()->create([
-        'user_id' => $anotherUser->id
+        'user_id' => $anotherUser->id,
     ]);
 
     $this->getJson(route('api.apps.show', $app->id))
@@ -41,7 +41,7 @@ test('user receives a 404 when quering for a non existent app', function () {
     $response = $this->getJson(route('api.apps.show', 1));
     $response->assertStatus(Response::HTTP_NOT_FOUND)
         ->assertJson([
-            'message' => "No query results for model [App\Models\App] 1"
+            'message' => "No query results for model [App\Models\App] 1",
         ]);
 });
 

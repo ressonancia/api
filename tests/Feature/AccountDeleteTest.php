@@ -11,7 +11,7 @@ test('user can delete account', function () {
     $response->assertStatus(Response::HTTP_NO_CONTENT);
 
     $this->assertDatabaseMissing('users', [
-        'id' => $user->id
+        'id' => $user->id,
     ]);
 });
 
@@ -19,7 +19,7 @@ test('user should delete apps before delete the account', function () {
     $user = $this->login();
 
     App::factory()->create([
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $response = $this->deleteJson(route('api.users.destroy'));
@@ -30,10 +30,9 @@ test('user should delete apps before delete the account', function () {
     );
 
     $this->assertDatabaseHas('users', [
-        'id' => $user->id
+        'id' => $user->id,
     ]);
 });
-
 
 test('user needs to be logged in to delete an account', function () {
     $this->withMiddleware(Authenticate::class);

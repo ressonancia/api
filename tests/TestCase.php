@@ -12,7 +12,6 @@ use Laravel\Passport\Passport;
 
 abstract class TestCase extends BaseTestCase
 {
-
     use RefreshDatabase;
 
     protected function setUp(): void
@@ -21,7 +20,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->withoutMiddleware([
             Authenticate::class,
-            EnsureEmailIsVerified::class
+            EnsureEmailIsVerified::class,
         ]);
     }
 
@@ -29,14 +28,14 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $user ?? User::factory()->create();
         Passport::actingAs($user);
+
         return $user;
     }
 
-    protected function mockRefreshAppsRequest() : void
+    protected function mockRefreshAppsRequest(): void
     {
         Http::fake([
-            config('ressonance.refresh_reverb_url')
-                => Http::response('{"status":"Applications Refreshed"}', 200),
+            config('ressonance.refresh_reverb_url') => Http::response('{"status":"Applications Refreshed"}', 200),
         ]);
     }
 }

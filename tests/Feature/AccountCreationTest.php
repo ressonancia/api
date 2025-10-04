@@ -15,7 +15,7 @@ test('user can create an account', function () {
     $oauthClient = Client::factory()->create([
         'id' => 2,
         'personal_access_client' => 1,
-        'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2'
+        'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2',
     ]);
 
     $response = $this->postJson(route('api.account.store'), [
@@ -43,13 +43,13 @@ test('user can create an account', function () {
 
     $this->assertDatabaseHas('users', [
         'name' => 'Fabio Lioni',
-        'email' => 'lioni@ressonance.com'
+        'email' => 'lioni@ressonance.com',
     ]);
 
     $this->assertDatabaseHas('oauth_access_tokens', [
         'name' => 'Pending Validation',
         'user_id' => $jsonResponse['user']['id'],
-        'client_id' => $oauthClient->id
+        'client_id' => $oauthClient->id,
     ]);
 });
 
@@ -99,8 +99,8 @@ test('user needs to give a valid password', function () {
                 'The password field confirmation does not match.',
                 'The password field must be at least 8 characters.',
                 'The password field must contain at least one uppercase and one lowercase letter.',
-                'The password field must contain at least one number.'
-            ]
+                'The password field must contain at least one number.',
+            ],
         ]);
 });
 
@@ -117,6 +117,6 @@ test('user email needs to be unique', function () {
         ->assertJsonFragment([
             'email' => [
                 'The email has already been taken.',
-            ]
+            ],
         ]);
 });

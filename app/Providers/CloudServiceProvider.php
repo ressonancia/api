@@ -2,13 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
-use App\Models\User;
+use Illuminate\Support\ServiceProvider;
 
 class CloudServiceProvider extends ServiceProvider
 {
@@ -27,7 +27,7 @@ class CloudServiceProvider extends ServiceProvider
     {
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
-                ->subject(config('app.name') . '::Verify Email Address')
+                ->subject(config('app.name').'::Verify Email Address')
                 ->greeting('THANKS FOR SIGNING UP!')
                 ->line('Verify your E-mail Address clicking at the button bellow.')
                 ->action('Verify Email Address', $url)
@@ -35,7 +35,7 @@ class CloudServiceProvider extends ServiceProvider
         });
 
         VerifyEmail::createUrlUsing(function (object $notifiable) {
-    
+
             $url = URL::temporarySignedRoute(
                 'verification.verify',
                 now()->addMinutes(Config::get('auth.verification.expire', 60)),
@@ -45,12 +45,12 @@ class CloudServiceProvider extends ServiceProvider
                 ]
             );
 
-            return config('app.spa_url') . '/email-verification?'
-                . http_build_query(['route' => rtrim(strtr(base64_encode($url), '+/', '-_'), '=')]);
+            return config('app.spa_url').'/email-verification?'
+                .http_build_query(['route' => rtrim(strtr(base64_encode($url), '+/', '-_'), '=')]);
         });
 
         ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return config('app.spa_url') . '/reset-password?token='.$token;
+            return config('app.spa_url').'/reset-password?token='.$token;
         });
     }
 }

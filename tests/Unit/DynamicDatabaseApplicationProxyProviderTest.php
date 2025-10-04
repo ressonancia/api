@@ -18,7 +18,7 @@ beforeEach(function () {
         = new DynamicDatabaseApplicationProxyProvider(collect());
 });
 
-it('can find an application by any attribute', function () {    
+it('can find an application by any attribute', function () {
     $firstApp = $this->appsCollection->first();
     $firstFoundApp = $this->databaseApplicationProvider->find('app_id', $firstApp->app_id);
 
@@ -28,7 +28,7 @@ it('can find an application by any attribute', function () {
     expect($firstFoundApp->secret())->toEqual($firstApp->app_secret);
     expect($firstFoundApp)->toBeInstanceOf(Application::class);
     expect($secondFoundApp->secret())->toEqual($secondApp->app_secret);
-    expect($secondFoundApp)->toBeInstanceOf(Application::class); 
+    expect($secondFoundApp)->toBeInstanceOf(Application::class);
 });
 
 it('throws an exception if app is not found', function () {
@@ -57,7 +57,6 @@ it('can find by key', function () {
     expect($found)->toBeInstanceOf(Application::class);
 });
 
-
 it('The method all is a proxy', function () {
     $this->mock(DatabaseApplicationProvider::class, function ($mock) {
         $mock->shouldReceive('all')
@@ -67,7 +66,6 @@ it('The method all is a proxy', function () {
 
     $this->databaseApplicationProvider->all();
 });
-
 
 it('The method findById is a proxy', function () {
     $application = buildApp();
@@ -111,7 +109,8 @@ it('The method find is a proxy', function () {
         ->toBe($application->id());
 });
 
-function buildApp () {
+function buildApp()
+{
     return new Application(
         id: 'app-1',
         key: 'my-key',
@@ -121,4 +120,4 @@ function buildApp () {
         allowedOrigins: ['https://example.com'],
         maxMessageSize: 1024 * 10,
         options: ['debug' => true]);
-    }
+}

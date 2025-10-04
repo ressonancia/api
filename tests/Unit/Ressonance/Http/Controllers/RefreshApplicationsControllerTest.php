@@ -25,14 +25,13 @@ it('can clean Applications drivers at the service container', function () {
     expect($decodedResponse['status'])->toBe('Applications Refreshed');
 });
 
-
 it('can clean DatabaseApplicationProvider instance at the service container', function () {
-    //save the instance in memory
+    // save the instance in memory
     app(DatabaseApplicationProvider::class);
 
     $app = App::factory()->create([
-        'user_id' => 1
-    ]);    
+        'user_id' => 1,
+    ]);
 
     await($this->requestWithoutAppId('/refresh-applications', 'POST'));
 

@@ -23,7 +23,7 @@ class CreateAppRequest extends FormRequest
     {
         return [
             'app_name' => 'required|string|max:200',
-            'app_language_choice' => 'nullable|string|max:200'
+            'app_language_choice' => 'nullable|string|max:200',
         ];
     }
 }
