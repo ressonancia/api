@@ -9,7 +9,7 @@ Route::group([
     'as' => 'passport.',
 ], function () {
     Route::post('/token', [
-        'uses' => [AccessTokenController::class, 'issueToken'],
+        'uses' => AccessTokenController::class.'@issueToken',
         'as' => 'token',
         'middleware' => 'throttle',
     ]);
