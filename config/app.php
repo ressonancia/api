@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Force Schema
+    |--------------------------------------------------------------------------
+    |
+    | Force HTTPS. Useful when the application is behind a proxy that
+    | terminates SSL. Make sure to also set the "TrustProxies"
+    |
+    */
+
+    'force_schema' => env('APP_FORCE_SCHEMA', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
