@@ -27,13 +27,13 @@ class DatabaseSeeder extends Seeder
         $user = User::factory()->create([
             'name' => 'Zaphod Beeblebrox',
             'email' => 'zaphod@l30.space',
-            'password' => bcrypt('secret')
+            'password' => bcrypt('secret'),
         ]);
 
         Client::truncate();
 
         DB::table('oauth_clients')->insert([
-            'name' => "First Party SPA",
+            'name' => 'First Party SPA',
             'secret' => 'Dq9p296oaZtbaH7HX8v9gD1nuHaWmLSlox8a9Bfk',
             'provider' => 'users',
             'redirect' => 'http://localhost',
@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('oauth_clients')->insert([
-            'name' => "Ressonance Personal Access Client",
+            'name' => 'Ressonance Personal Access Client',
             'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2',
             'provider' => null,
             'redirect' => 'http://localhost',
@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         App::factory()->times(20)->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 }

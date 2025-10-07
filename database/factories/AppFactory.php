@@ -20,7 +20,7 @@ class AppFactory extends Factory
         return [
             'app_name' => $this->faker->word(),
             'app_language_choice' => $this->faker->randomElement([
-                'PHP', 'Java', 'JavaScript', 'Python', 'Laravel', 'Django', 'Go', 'C#'
+                'PHP', 'Java', 'JavaScript', 'Python', 'Laravel', 'Django', 'Go', 'C#',
             ]),
             'app_id' => (string) Str::uuid(),
             'app_key' => Str::lower(

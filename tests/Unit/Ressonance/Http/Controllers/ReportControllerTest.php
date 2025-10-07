@@ -12,7 +12,7 @@ it('can return debug report', function () {
     app()->make(ApplicationManager::class)->forgetDrivers();
 
     $app = App::factory()->create([
-        'user_id' => 1
+        'user_id' => 1,
     ]);
 
     $response = await($this->requestWithoutAppId('/report'));

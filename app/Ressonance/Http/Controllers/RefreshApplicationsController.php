@@ -4,8 +4,8 @@ namespace App\Ressonance\Http\Controllers;
 
 use App\Ressonance\DatabaseApplicationProvider;
 use Laravel\Reverb\ApplicationManager;
-use Laravel\Reverb\Servers\Reverb\Http\Response;
 use Laravel\Reverb\Protocols\Pusher\Http\Controllers\Controller;
+use Laravel\Reverb\Servers\Reverb\Http\Response;
 
 class RefreshApplicationsController extends Controller
 {

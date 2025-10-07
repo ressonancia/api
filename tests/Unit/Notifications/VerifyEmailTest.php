@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Config;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class);
@@ -20,7 +20,7 @@ it('verifies the email verification mail customization', function () {
     Notification::assertSentTo($user, VerifyEmail::class, function ($notification) use ($user, $url) {
         $mailMessage = $notification->toMail($user);
 
-        expect($mailMessage->subject)->toBe(config('app.name') . '::Verify Email Address');
+        expect($mailMessage->subject)->toBe(config('app.name').'::Verify Email Address');
         expect($mailMessage->greeting)->toBe('THANKS FOR SIGNING UP!');
         expect($mailMessage->introLines)->toContain('Verify your E-mail Address clicking at the button bellow.');
         expect($mailMessage->actionText)->toBe('Verify Email Address');
@@ -42,6 +42,6 @@ function buildVerificationUrl(User $user): string
         ]
     );
 
-    return config('app.spa_url') . '/email-verification?'
-        . http_build_query(['route' => rtrim(strtr(base64_encode($url), '+/', '-_'), '=')]);
+    return config('app.spa_url').'/email-verification?'
+        .http_build_query(['route' => rtrim(strtr(base64_encode($url), '+/', '-_'), '=')]);
 }

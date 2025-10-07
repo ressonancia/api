@@ -3,8 +3,8 @@
 namespace App\Ressonance;
 
 use Illuminate\Support\Collection;
-use Laravel\Reverb\Contracts\ApplicationProvider;
 use Laravel\Reverb\Application;
+use Laravel\Reverb\Contracts\ApplicationProvider;
 
 class DynamicDatabaseApplicationProxyProvider implements ApplicationProvider
 {
@@ -23,6 +23,7 @@ class DynamicDatabaseApplicationProxyProvider implements ApplicationProvider
     {
         return app(DatabaseApplicationProvider::class)->all();
     }
+
     /**
      * Find an application instance by ID.
      *

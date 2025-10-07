@@ -23,7 +23,7 @@ test('user can send another email verify notification', function () {
 
     $response->assertStatus(Response::HTTP_OK);
     $response->assertJson([
-        'message' => 'Verification link sent!'
+        'message' => 'Verification link sent!',
     ]);
 
     Notification::assertSentTo($user, VerifyEmail::class);
@@ -33,7 +33,7 @@ test('user needs to be authenticated to send another email', function () {
     $this->withMiddleware([
         Authenticate::class,
     ]);
-    
+
     $response = $this->postJson(
         route('verification.send')
     )->assertUnauthorized();

@@ -20,7 +20,7 @@ class PasswordResetRequest extends FormRequest
             'password' => [
                 'required',
                 'confirmed',
-                Password::min(8)->mixedCase()->numbers()
+                Password::min(8)->mixedCase()->numbers(),
             ],
         ];
     }

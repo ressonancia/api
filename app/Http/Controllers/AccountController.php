@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
-    public function store(CreateAccountRequest $request) : JsonResponse {
+    public function store(CreateAccountRequest $request): JsonResponse
+    {
         $user = User::create($request->validated());
         event(new Registered($user));
 
@@ -29,17 +30,19 @@ class AccountController extends Controller
         );
     }
 
-    public function destroy() : JsonResponse {
-        
+    public function destroy(): JsonResponse
+    {
+
         $user = Auth::user();
 
         if ($user->apps()->count()) {
             return response()->json([
-                'message' => 'The user should delete all apps before deleting the account'
+                'message' => 'The user should delete all apps before deleting the account',
             ], Response::HTTP_PRECONDITION_FAILED);
         }
 
         $user->delete();
+
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

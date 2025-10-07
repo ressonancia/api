@@ -12,14 +12,16 @@ use Illuminate\Support\Str;
 
 class AppsController extends Controller
 {
-    public function index() : JsonResponse {
+    public function index(): JsonResponse
+    {
         return response()->json(
             Auth::user()->apps()->paginate(1000)
         );
     }
 
-    public function show(App $app) : JsonResponse {
-        
+    public function show(App $app): JsonResponse
+    {
+
         if (Auth::user()->cannot('view', $app)) {
             abort(403);
         }
@@ -27,7 +29,8 @@ class AppsController extends Controller
         return response()->json($app);
     }
 
-    public function store(CreateAppRequest $request, Str $stringSupport) : JsonResponse {
+    public function store(CreateAppRequest $request, Str $stringSupport): JsonResponse
+    {
         $createdApp = App::create([
             'user_id' => Auth::user()->id,
             'app_name' => $request->get('app_name'),
@@ -49,7 +52,8 @@ class AppsController extends Controller
         );
     }
 
-    public function destroy(App $app) : Response {
+    public function destroy(App $app): Response
+    {
         if (Auth::user()->cannot('delete', $app)) {
             abort(403);
         }

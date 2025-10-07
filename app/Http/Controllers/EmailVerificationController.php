@@ -7,21 +7,23 @@ use Illuminate\Http\JsonResponse;
 
 class EmailVerificationController extends Controller
 {
-    public function verify(EmailVerificationRequest $request) : JsonResponse {
+    public function verify(EmailVerificationRequest $request): JsonResponse
+    {
         $request->fulfill();
 
         return response()->json([
             'data' => [
-                'verified' => true
-            ]
-        ]);   
+                'verified' => true,
+            ],
+        ]);
     }
 
-    public function send() : JsonResponse {
+    public function send(): JsonResponse
+    {
         request()->user()->sendEmailVerificationNotification();
- 
+
         return response()->json([
-            'message' => 'Verification link sent!'
+            'message' => 'Verification link sent!',
         ]);
     }
 }

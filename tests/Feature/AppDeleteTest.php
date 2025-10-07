@@ -11,11 +11,11 @@ test('user can delete an app', function () {
     $user = $this->login();
 
     $app = App::factory()->create([
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $appToKeep = App::factory()->create([
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $response = $this->deleteJson(route('api.apps.destroy', $app->id));
@@ -23,12 +23,12 @@ test('user can delete an app', function () {
 
     $this->assertDatabaseMissing('apps', [
         'id' => $app->id,
-        'deleted_at' => null
+        'deleted_at' => null,
     ]);
 
     $this->assertDatabaseHas('apps', [
         'id' => $appToKeep->id,
-        'deleted_at' => null
+        'deleted_at' => null,
     ]);
 
     Queue::assertPushed(RefreshReverb::class);
@@ -38,7 +38,7 @@ test('user cannot delete an app from another user', function () {
     $user = $this->login();
 
     $app = App::factory()->create([
-        'user_id' => $user->id + 1
+        'user_id' => $user->id + 1,
     ]);
 
     $this->deleteJson(route('api.apps.destroy', $app->id))

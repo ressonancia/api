@@ -13,7 +13,7 @@ It('can refresh reverb applications', function () {
         ->once()
         ->with('request endpoint response:{"status":"Applications Refreshed"}');
 
-    $job = new RefreshReverb();
+    $job = new RefreshReverb;
     $job->handle();
 });
 
@@ -27,6 +27,6 @@ It('can skip refresh reverb applications by environment variable', function () {
         ->once()
         ->with('Websocket integration disabled by env');
 
-    $job = new RefreshReverb();
+    $job = new RefreshReverb;
     $job->handle();
 });

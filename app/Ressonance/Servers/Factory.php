@@ -12,7 +12,7 @@ class Factory extends ReverbFactory
 {
     protected static function pusherRoutes(string $path): RouteCollection
     {
-		
+
         $routes = parent::pusherRoutes($path);
 
         $routes->add('refresh_applications', Route::post('/refresh-applications', new RefreshApplicationsController));

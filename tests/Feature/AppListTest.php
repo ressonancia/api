@@ -9,13 +9,13 @@ test('user can list apps', function () {
     $user = $this->login();
 
     $app = App::factory()->create([
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     // This one should not be retrieved
     // belongs to another user
     App::factory()->create([
-        'user_id' => $user->id + 1
+        'user_id' => $user->id + 1,
     ]);
 
     $response = $this->getJson(route('api.apps.index'));

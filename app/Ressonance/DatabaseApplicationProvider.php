@@ -3,9 +3,9 @@
 namespace App\Ressonance;
 
 use Illuminate\Support\Collection;
+use Laravel\Reverb\Application;
 use Laravel\Reverb\Contracts\ApplicationProvider;
 use Laravel\Reverb\Exceptions\InvalidApplication;
-use Laravel\Reverb\Application;
 
 class DatabaseApplicationProvider implements ApplicationProvider
 {
@@ -26,6 +26,7 @@ class DatabaseApplicationProvider implements ApplicationProvider
             return $this->findById($app['app_id']);
         });
     }
+
     /**
      * Find an application instance by ID.
      *

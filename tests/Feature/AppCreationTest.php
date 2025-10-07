@@ -34,7 +34,7 @@ test('user can create an app', function () {
 
     $response = $this->postJson(route('api.apps.store'), [
         'app_name' => 'Batocera Cloud',
-        'app_language_choice' => 'PHP'
+        'app_language_choice' => 'PHP',
     ]);
     $response->assertStatus(Response::HTTP_CREATED);
 
@@ -50,22 +50,20 @@ test('user can create an app', function () {
     Queue::assertPushed(RefreshReverb::class);
 });
 
-
 test('user needs to be logged in to create app', function () {
     $this->withMiddleware(Authenticate::class);
 
     $this->postJson(route('api.apps.store'), [
         'app_name' => 'Batocera Cloud',
-        'app_language_choice' => 'PHP'
+        'app_language_choice' => 'PHP',
     ])->assertUnauthorized();
 });
-
 
 test('user needs to to verify email to create app', function () {
     $this->withMiddleware(EnsureEmailIsVerified::class);
 
     $this->postJson(route('api.apps.store'), [
         'app_name' => 'Batocera Cloud',
-        'app_language_choice' => 'PHP'
+        'app_language_choice' => 'PHP',
     ])->assertForbidden();
 });

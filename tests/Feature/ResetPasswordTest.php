@@ -15,8 +15,8 @@ test('user can reset its password', function () {
 
     Log::shouldReceive('info')
         ->once()
-        ->with('Password Reseted For: ' . $user->email);
-    
+        ->with('Password Reseted For: '.$user->email);
+
     $response = $this->postJson(route('password.reset'), [
         'email' => $user->email,
         'token' => $token,
@@ -25,7 +25,7 @@ test('user can reset its password', function () {
     ]);
 
     $response->assertStatus(Response::HTTP_OK)->assertJson([
-        'message' => 'Password has changed'
+        'message' => 'Password has changed',
     ]);
 
     $this->assertTrue(Hash::check('Pipoka123!', $user->fresh()->password));
@@ -38,8 +38,8 @@ test('user can not reset password with invalid token', function () {
 
     Log::shouldReceive('info')
         ->once()
-        ->with('Password Reset Try With Invalid Token For: ' . $user->email);
-    
+        ->with('Password Reset Try With Invalid Token For: '.$user->email);
+
     $response = $this->postJson(route('password.reset'), [
         'email' => $user->email,
         'token' => 'invelid-token',
@@ -48,7 +48,7 @@ test('user can not reset password with invalid token', function () {
     ]);
 
     $response->assertStatus(Response::HTTP_BAD_REQUEST)->assertJson([
-        'message' => 'Invalid token'
+        'message' => 'Invalid token',
     ]);
 
     $this->assertTrue(Hash::check('milho', $user->fresh()->password));
@@ -72,7 +72,7 @@ test('user needs to give a valid email', function () {
         ]);
 
     $this->postJson(route('password.reset'), [
-        'email' => 'invalid'
+        'email' => 'invalid',
     ])->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonValidationErrors(['email'])
         ->assertJsonFragment([
@@ -91,7 +91,7 @@ test('user needs to give a valid password', function () {
                 'The password field confirmation does not match.',
                 'The password field must be at least 8 characters.',
                 'The password field must contain at least one uppercase and one lowercase letter.',
-                'The password field must contain at least one number.'
-            ]
+                'The password field must contain at least one number.',
+            ],
         ]);
 });

@@ -25,14 +25,14 @@ it('has a default date format', function () {
 
 it('has an avatar getter', function () {
     $user = User::factory()->make();
-    expect($user->avatar)->toBe("https://www.gravatar.com/avatar/"
-            . hash( "sha256", strtolower( trim( $user->email ) ) ) . "?s=40");
+    expect($user->avatar)->toBe('https://www.gravatar.com/avatar/'
+            .hash('sha256', strtolower(trim($user->email))).'?s=40');
 });
 
 it('has many apps', function () {
     $user = User::factory()->create();
     $app = App::factory()->create([
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $userApps = $user->apps;

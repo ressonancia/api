@@ -251,7 +251,7 @@ return [
         ReverbConnections::class => [
             'sample_rate' => 1,
         ],
-     
+
         ReverbMessages::class => [
             'sample_rate' => 1,
         ],

@@ -2,11 +2,11 @@
 
 namespace App\Ressonance\Console\Commands;
 
+use App\Ressonance\Servers\Factory as ServerFactory;
 use Laravel\Reverb\Contracts\Logger;
 use Laravel\Reverb\Loggers\CliLogger;
-use App\Ressonance\Servers\Factory as ServerFactory;
-use React\EventLoop\Loop;
 use Laravel\Reverb\Servers\Reverb\Console\Commands\StartServer as ReverbStartServer;
+use React\EventLoop\Loop;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'ressonance:start')]
@@ -19,7 +19,7 @@ class StartServer extends ReverbStartServer
                 {--hostname= : The hostname the server is accessible from}
                 {--debug : Indicates whether debug messages should be displayed in the terminal}';
 
-	protected $description = 'Start Reverb serve with ressonance customizations';
+    protected $description = 'Start Reverb serve with ressonance customizations';
 
     public function handle(): void
     {

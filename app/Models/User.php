@@ -5,14 +5,14 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -36,7 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     protected $appends = [
-        'avatar'
+        'avatar',
     ];
 
     /**
@@ -59,11 +59,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarAttribute(): string
     {
-        return "https://www.gravatar.com/avatar/"
-            . hash( "sha256", strtolower( trim( $this->email ) ) ) . "?s=40";
+        return 'https://www.gravatar.com/avatar/'
+            .hash('sha256', strtolower(trim($this->email))).'?s=40';
     }
 
-    public function apps() : HasMany {
+    public function apps(): HasMany
+    {
         return $this->hasMany(App::class);
     }
 }
