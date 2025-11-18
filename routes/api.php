@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AppsController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,7 @@ Route::middleware(['auth:api'])->group(function () {
         return $request->user();
     })->name('api.me');
 });
+
+Route::post('/register', [RegisterController::class, 'store'])
+    ->middleware('throttle:api')
+    ->name('api.register');
