@@ -34,6 +34,9 @@ class Install extends Command
      */
     public function handle()
     {
+        // necessary to run the migrations when the database is mounted as a volume
+        $this->call('migrate', ['--force' => true]);
+
         if ($this->shouldInstallRessonance()) {
             self::installOauthClients();
 

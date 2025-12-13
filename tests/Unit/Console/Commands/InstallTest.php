@@ -18,6 +18,7 @@ it('can install ressonance', function () {
         ->expectsOutput('Access ressonance at port 80.')
         ->expectsOutput('Access ressonance api port 8000.')
         ->expectsOutput('Ressonance websockets API is running at port 8081.')
+        ->expectsOutputToContain('Nothing to migrate')
         ->assertExitCode(0);
 
     $this->assertDatabaseHas('oauth_clients', [
