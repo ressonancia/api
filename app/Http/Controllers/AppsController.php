@@ -35,7 +35,7 @@ class AppsController extends Controller
             'user_id' => Auth::user()->id,
             'app_name' => $request->get('app_name'),
             'app_language_choice' => $request->get('app_language_choice'),
-            'app_id' => (string) $stringSupport->uuid(),
+            'app_id' => (string) random_int(1000000000, 9999999999),
             'app_key' => $stringSupport->lower(
                 $stringSupport->random(20)
             ),

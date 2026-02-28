@@ -12,16 +12,11 @@ test('user can create an app', function () {
 
     $user = $this->login();
 
-    $uuid = Str::uuid();
     $key = Str::random(20);
     $secret = Str::random(20);
 
-    $this->mock(Str::class, function ($mock) use ($uuid, $key, $secret) {
+    $this->mock(Str::class, function ($mock) use ($key, $secret) {
         $mock->makePartial();
-
-        $mock->shouldReceive('uuid')
-            ->once()
-            ->andReturn($uuid);
 
         $mock->shouldReceive('random')
             ->once()
@@ -40,7 +35,6 @@ test('user can create an app', function () {
 
     $this->assertDatabaseHas('apps', [
         'user_id' => $user->id,
-        'app_id' => Str::lower($uuid),
         'app_key' => Str::lower($key),
         'app_secret' => Str::lower($secret),
         'app_name' => 'Batocera Cloud',
