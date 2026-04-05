@@ -5,18 +5,13 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
-use Laravel\Passport\Client;
 
 test('user can create an account', function () {
 
     Carbon::setTestNow();
     Event::fake(Registered::class);
 
-    $oauthClient = Client::factory()->create([
-        'id' => 2,
-        'personal_access_client' => 1,
-        'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2',
-    ]);
+    $oauthClient = $this->configurePersonalGrantType();
 
     $response = $this->postJson(route('api.account.store'), [
         'name' => 'Fabio Lioni',

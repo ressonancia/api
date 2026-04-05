@@ -30,7 +30,7 @@ class SocialLoginController extends Controller
         // Because the email is already validated by the provider
         $token = $user->createToken('From Social Login');
 
-        $authorizationCode = Str::uuid()->toString();
+        $authorizationCode = (string) Str::uuid();
 
         cache()->put(
             'social_login_'.$authorizationCode,
@@ -39,7 +39,7 @@ class SocialLoginController extends Controller
                 'access_token' => $token->accessToken,
                 'token_type' => 'Bearer',
                 'expires_in' => $token->token
-                    ->expires_at->diffInSeconds(now()),
+                    ->expires_at->diffInSeconds(now(), true),
             ],
             now()->addMinutes(5)
         );
