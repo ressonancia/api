@@ -5,6 +5,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SocialLoginController;
 use Illuminate\Support\Facades\Route;
 
 if (! config('ressonance.self_hosted')) {
@@ -32,4 +33,10 @@ if (! config('ressonance.self_hosted')) {
     });
 
     Route::post('/account', [AccountController::class, 'store'])->name('api.account.store');
+
+    Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect'])->name('api.social.auth.redirect');
+
+    Route::get('/auth/{provider}/callback', [SocialLoginController::class, 'callback'])->name('api.social.auth.callback');
+
+    Route::post('/auth/access-token/{authorizationCode}', [SocialLoginController::class, 'getAccessToken'])->name('api.social.auth.access-token');
 }
