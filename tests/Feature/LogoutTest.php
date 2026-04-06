@@ -2,16 +2,11 @@
 
 use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
-use Laravel\Passport\Client;
 
 test('user can logout', function () {
     $this->withMiddleware(Authenticate::class);
 
-    Client::factory()->create([
-        'id' => 2,
-        'personal_access_client' => 1,
-        'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2',
-    ]);
+    $this->configurePersonalGrantType();
 
     $user = User::factory()->create();
     $token = $user->createToken('Logout Test');
