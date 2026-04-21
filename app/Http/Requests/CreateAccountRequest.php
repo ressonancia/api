@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\EmailRealValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,7 +25,13 @@ class CreateAccountRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:200',
-            'email' => 'required|email|max:200|unique:users',
+            'email' => [
+                'required',
+                'email',
+                'max:200',
+                'unique:users',
+                new EmailRealValidation,
+            ],
             'password' => [
                 'required',
                 'confirmed',

@@ -5,6 +5,8 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use SendKit\Laravel\Facades\SendKit;
 
 test('user can create an account', function () {
 
@@ -114,4 +116,46 @@ test('user email needs to be unique', function () {
                 'The email has already been taken.',
             ],
         ]);
+});
+
+test('user email can be blocked by sendkit validation', function () {
+    Event::fake(Registered::class);
+
+    config([
+        'mail.default' => 'sendkit',
+        'app.enable_email_enhanced_verification' => true,
+    ]);
+
+    SendKit::shouldReceive('validateEmail')
+        ->once()
+        ->with('blocked@ressonance.com')
+        ->andReturn([
+            'should_block' => true,
+        ]);
+
+    Log::shouldReceive('info')
+        ->once()
+        ->with('Email verification failed', [
+            'email' => 'blocked@ressonance.com',
+            'result' => [
+                'should_block' => true,
+            ],
+        ]);
+
+    $this->postJson(route('api.account.store'), [
+        'name' => 'Fabio Lioni',
+        'email' => 'blocked@ressonance.com',
+        'password' => 'VerySecret123',
+        'password_confirmation' => 'VerySecret123',
+    ])->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+        ->assertJsonValidationErrors(['email'])
+        ->assertJsonFragment([
+            'email' => ['The email field must be a valid email address.'],
+        ]);
+
+    Event::assertNotDispatched(Registered::class);
+
+    $this->assertDatabaseMissing('users', [
+        'email' => 'blocked@ressonance.com',
+    ]);
 });

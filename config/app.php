@@ -80,6 +80,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enhanced Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | Enables additional email verification checks (SendKit email validation)
+    | during request validation rules.
+    |
+    */
+
+    'enable_email_enhanced_verification' => (bool) env('ENABLE_EMAIL_ENHANCED_VERIFICATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
