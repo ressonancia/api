@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         Install::installOauthClients();
 
         App::factory()->times(20)->create([
-            'user_id' => $user->id,
+            'organization_id' => $user->organizations()->first()->id,
         ]);
     }
 }

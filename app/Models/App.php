@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class App extends Model
@@ -12,5 +13,10 @@ class App extends Model
 
     protected $hidden = ['deleted_at'];
 
-    protected $fillable = ['user_id', 'app_name', 'app_language_choice', 'app_id', 'app_key', 'app_secret'];
+    protected $fillable = ['organization_id', 'app_name', 'app_language_choice', 'app_id', 'app_key', 'app_secret'];
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
 }

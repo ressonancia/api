@@ -35,7 +35,7 @@ class AccountController extends Controller
 
         $user = Auth::user();
 
-        if ($user->apps()->count()) {
+        if ($user->organizations()->whereHas('apps')->exists()) {
             return response()->json([
                 'message' => 'The user should delete all apps before deleting the account',
             ], Response::HTTP_PRECONDITION_FAILED);

@@ -6,7 +6,6 @@ use DateTimeInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -82,11 +81,6 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return 'https://www.gravatar.com/avatar/'
             .hash('sha256', strtolower(trim($this->email))).'?s=40';
-    }
-
-    public function apps(): HasMany
-    {
-        return $this->hasMany(App::class);
     }
 
     public function organizations(): BelongsToMany

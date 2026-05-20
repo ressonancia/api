@@ -30,7 +30,7 @@ it('can clean DatabaseApplicationProvider instance at the service container', fu
     app(DatabaseApplicationProvider::class);
 
     $app = App::factory()->create([
-        'user_id' => 1,
+        'organization_id' => Str::uuid()->toString(),
     ]);
 
     await($this->requestWithoutAppId('/refresh-applications', 'POST'));

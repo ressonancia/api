@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Organization extends Model
@@ -41,5 +42,10 @@ class Organization extends Model
         return $this->belongsToMany(User::class)
             ->withPivot(['id', 'role'])
             ->withTimestamps();
+    }
+
+    public function apps(): HasMany
+    {
+        return $this->hasMany(App::class);
     }
 }

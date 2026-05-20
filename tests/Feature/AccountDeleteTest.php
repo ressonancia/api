@@ -17,9 +17,10 @@ test('user can delete account', function () {
 
 test('user should delete apps before delete the account', function () {
     $user = $this->login();
+    $organization = $user->organizations()->first();
 
     App::factory()->create([
-        'user_id' => $user->id,
+        'organization_id' => $organization->id,
     ]);
 
     $response = $this->deleteJson(route('api.users.destroy'));
