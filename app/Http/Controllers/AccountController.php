@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAccountRequest;
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -35,11 +36,19 @@ class AccountController extends Controller
 
         $user = Auth::user();
 
-        if ($user->apps()->count()) {
-            return response()->json([
-                'message' => 'The user should delete all apps before deleting the account',
-            ], Response::HTTP_PRECONDITION_FAILED);
+        $ownedOrganizations = $user->organizations()
+            ->wherePivot('role', Organization::ROLE_OWNER)
+            ->get();
+
+        foreach ($ownedOrganizations as $organization) {
+            $organization->apps()->delete();
         }
+
+        $nonOwnedOrganizationIds = $user->organizations()
+            ->wherePivot('role', '!=', Organization::ROLE_OWNER)
+            ->pluck('organizations.id');
+
+        $user->organizations()->detach($nonOwnedOrganizationIds);
 
         $user->delete();
 

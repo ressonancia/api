@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\App;
+use App\Models\Organization;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 pest()->extend(Tests\TestCase::class);
 
@@ -29,17 +29,26 @@ it('has an avatar getter', function () {
             .hash('sha256', strtolower(trim($user->email))).'?s=40');
 });
 
-it('has many apps', function () {
+it('has many organizations', function () {
     $user = User::factory()->create();
-    $app = App::factory()->create([
-        'user_id' => $user->id,
-    ]);
+    $organization = Organization::factory()->create();
+    $user->organizations()->attach($organization->id, ['role' => Organization::ROLE_ADMIN]);
 
-    $userApps = $user->apps;
+    $userOrganizations = $user->organizations;
 
-    expect($userApps->pluck('id'))
-        ->toContain($app->id);
+    expect($userOrganizations->pluck('id'))
+        ->toContain($organization->id);
 
-    expect($user->apps())
-        ->toBeInstanceOf(HasMany::class);
+    expect($user->organizations())
+        ->toBeInstanceOf(BelongsToMany::class);
+});
+
+it('creates a default owned organization when the user is created', function () {
+    $user = User::factory()->create();
+
+    $ownedOrganization = $user->organizations()
+        ->wherePivot('role', Organization::ROLE_OWNER)
+        ->first();
+
+    expect($ownedOrganization)->not->toBeNull();
 });

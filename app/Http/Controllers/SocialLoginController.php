@@ -25,6 +25,7 @@ class SocialLoginController extends Controller
             'email' => $user->email,
             'email_verified_at' => now(),
         ]);
+        $user->ensureOwnedOrganization();
 
         // Not necesary to trigger Register event
         // Because the email is already validated by the provider

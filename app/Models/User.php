@@ -5,9 +5,10 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -64,8 +65,59 @@ class User extends Authenticatable implements MustVerifyEmail
             .hash('sha256', strtolower(trim($this->email))).'?s=40';
     }
 
-    public function apps(): HasMany
+    public static function booted(): void
     {
-        return $this->hasMany(App::class);
+        static::created(function (User $user) {
+            $user->ensureOwnedOrganization();
+        });
+    }
+
+    public function organizations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function ensureOwnedOrganization(): void
+    {
+        if ($this->organizations()->wherePivot('role', Organization::ROLE_OWNER)->exists()) {
+            return;
+        }
+
+        $organization = Organization::create([
+            'name' => 'Organization '.Str::upper(Str::random(8)),
+        ]);
+
+        $this->organizations()->attach(
+            $organization->id,
+            ['role' => Organization::ROLE_OWNER]
+        );
+    }
+
+    public function ownsOrganization(Organization $organization): bool
+    {
+        return $this->organizations()
+            ->where('organizations.id', $organization->id)
+            ->wherePivot('role', Organization::ROLE_OWNER)
+            ->exists();
+    }
+
+    public function isOrganizationAdmin(Organization $organization): bool
+    {
+        return $this->organizations()
+            ->where('organizations.id', $organization->id)
+            ->wherePivotIn('role', [
+                Organization::ROLE_OWNER,
+                Organization::ROLE_ADMIN,
+            ])
+            ->exists();
+    }
+
+    public function isOrganizationMember(Organization $organization): bool
+    {
+        return $this->organizations()
+            ->where('organizations.id', $organization->id)
+            ->exists();
     }
 }

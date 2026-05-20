@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateAppRequest;
 use App\Jobs\RefreshReverb;
 use App\Models\App;
+use App\Models\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -12,27 +13,30 @@ use Illuminate\Support\Str;
 
 class AppsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Organization $organization): JsonResponse
     {
+        $this->authorize('view', $organization);
+
         return response()->json(
-            Auth::user()->apps()->paginate(1000)
+            $organization->apps()->paginate(1000)
         );
     }
 
-    public function show(App $app): JsonResponse
+    public function show(Organization $organization, App $app): JsonResponse
     {
-
-        if (Auth::user()->cannot('view', $app)) {
-            abort(403);
-        }
+        $this->authorize('view', $organization);
+        $this->authorize('view', $app);
 
         return response()->json($app);
     }
 
-    public function store(CreateAppRequest $request, Str $stringSupport): JsonResponse
+    public function store(Organization $organization, CreateAppRequest $request, Str $stringSupport): JsonResponse
     {
+        $this->authorize('create', [App::class, $organization]);
+
         $createdApp = App::create([
             'user_id' => Auth::user()->id,
+            'organization_id' => $organization->id,
             'app_name' => $request->get('app_name'),
             'app_language_choice' => $request->get('app_language_choice'),
             'app_id' => (string) random_int(1000000000, 9999999999),
@@ -52,11 +56,10 @@ class AppsController extends Controller
         );
     }
 
-    public function destroy(App $app): Response
+    public function destroy(Organization $organization, App $app): Response
     {
-        if (Auth::user()->cannot('delete', $app)) {
-            abort(403);
-        }
+        $this->authorize('view', $organization);
+        $this->authorize('delete', $app);
 
         $app->delete();
         RefreshReverb::dispatch();

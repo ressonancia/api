@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Response;
@@ -47,6 +48,21 @@ test('user can create an account', function () {
         'name' => 'Pending Validation',
         'user_id' => $jsonResponse['user']['id'],
         'client_id' => $oauthClient->id,
+    ]);
+
+    $ownedOrganization = Organization::query()
+        ->whereHas('users', function ($query) use ($jsonResponse) {
+            $query->where('users.id', $jsonResponse['user']['id'])
+                ->where('organization_user.role', Organization::ROLE_OWNER);
+        })
+        ->first();
+
+    expect($ownedOrganization)->not->toBeNull();
+
+    $this->assertDatabaseHas('organization_user', [
+        'organization_id' => $ownedOrganization->id,
+        'user_id' => $jsonResponse['user']['id'],
+        'role' => Organization::ROLE_OWNER,
     ]);
 });
 
@@ -119,6 +135,10 @@ test('user email needs to be unique', function () {
 });
 
 test('user email can be blocked by sendkit validation', function () {
+    if (! class_exists(SendKit::class)) {
+        $this->markTestSkipped('SendKit package is not available in this environment.');
+    }
+
     Event::fake(Registered::class);
 
     config([

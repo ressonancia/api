@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Socialite;
@@ -61,10 +62,23 @@ test('user can signup with social accounts', function () {
     expect((int) ceil($cachedSocialLoginData['expires_in']))
         ->toBe((int) ceil(now()->diffInSeconds(now()->addYear(), true)));
 
+    $createdUser = User::where('email', $user->email)->first();
+
+    $ownedOrganization = Organization::query()
+        ->whereHas('users', function ($query) use ($createdUser) {
+            $query->where('users.id', $createdUser->id)
+                ->where('organization_user.role', Organization::ROLE_OWNER);
+        })
+        ->first();
+
+    expect($ownedOrganization)->not->toBeNull();
 });
 
 test('social login does not duplicate users', function () {
     $user = User::factory()->create();
+    $existingOwnedOrganizationCount = $user->organizations()
+        ->wherePivot('role', Organization::ROLE_OWNER)
+        ->count();
     Socialite::fake('github', $user);
 
     $response = $this->getJson(
@@ -79,6 +93,10 @@ test('social login does not duplicate users', function () {
     expect(
         cache()->get('social_login_'.$this->uuid)['user']->id,
     )->toBe($user->fresh()->id);
+
+    expect(
+        $user->fresh()->organizations()->wherePivot('role', Organization::ROLE_OWNER)->count()
+    )->toBe($existingOwnedOrganizationCount);
 });
 
 test('authorization code expires after 5 minutes', function () {
