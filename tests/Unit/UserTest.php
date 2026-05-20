@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\App;
+use App\Models\Organization;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 pest()->extend(Tests\TestCase::class);
@@ -42,4 +44,25 @@ it('has many apps', function () {
 
     expect($user->apps())
         ->toBeInstanceOf(HasMany::class);
+});
+
+it('has many organizations', function () {
+    $user = User::factory()->create();
+
+    expect($user->organizations())
+        ->toBeInstanceOf(BelongsToMany::class);
+});
+
+it('creates an owner organization when user is created', function () {
+    $user = User::factory()->create([
+        'name' => 'Linoni',
+    ]);
+
+    $ownerOrganization = $user->organizations()
+        ->wherePivot('role', Organization::ROLE_OWNER)
+        ->first();
+
+    expect($ownerOrganization)->not->toBeNull();
+    expect($user->organizations)->toHaveCount(1);
+    expect($ownerOrganization->name)->toBe("Linoni's Organization");
 });

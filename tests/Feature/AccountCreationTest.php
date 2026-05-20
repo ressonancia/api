@@ -48,6 +48,15 @@ test('user can create an account', function () {
         'user_id' => $jsonResponse['user']['id'],
         'client_id' => $oauthClient->id,
     ]);
+
+    $this->assertDatabaseHas('organization_user', [
+        'user_id' => $jsonResponse['user']['id'],
+        'role' => 'owner',
+    ]);
+
+    $this->assertDatabaseHas('organizations', [
+        'name' => "Fabio Lioni's Organization",
+    ]);
 });
 
 test('user needs to give a valid name', function () {

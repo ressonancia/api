@@ -52,6 +52,11 @@ test('user can signup with social accounts', function () {
         'client_id' => $this->oauthClient->id,
     ]);
 
+    $this->assertDatabaseHas('organization_user', [
+        'user_id' => User::where('email', $user->email)->first()->id,
+        'role' => 'owner',
+    ]);
+
     $cachedSocialLoginData = cache()->get('social_login_'.$this->uuid);
 
     expect($cachedSocialLoginData)->not->toBeNull();

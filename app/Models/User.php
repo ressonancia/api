@@ -5,9 +5,11 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -58,6 +60,24 @@ class User extends Authenticatable implements MustVerifyEmail
         return $date->format('Y-m-d\TH:i:sP');
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (User $user): void {
+            if ($user->organizations()->exists()) {
+                return;
+            }
+
+            $organization = Organization::create([
+                'name' => $user->name."'s Organization",
+            ]);
+
+            $user->organizations()->attach($organization->id, [
+                'id' => (string) Str::uuid(),
+                'role' => Organization::ROLE_OWNER,
+            ]);
+        });
+    }
+
     public function getAvatarAttribute(): string
     {
         return 'https://www.gravatar.com/avatar/'
@@ -67,5 +87,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function apps(): HasMany
     {
         return $this->hasMany(App::class);
+    }
+
+    public function organizations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class)
+            ->withPivot(['id', 'role'])
+            ->withTimestamps();
     }
 }
