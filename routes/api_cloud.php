@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SocialLoginController;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 
 if (! config('ressonance.self_hosted')) {
     Route::middleware(['auth:api'])->group(function () {
+        Route::post('/organizations', [OrganizationController::class, 'store'])->name('api.organizations.store');
+
         Route::post('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware('signed')
             ->name('verification.verify');
