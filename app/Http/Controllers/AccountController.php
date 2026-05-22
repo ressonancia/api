@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAccountRequest;
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -34,13 +35,22 @@ class AccountController extends Controller
     {
 
         $user = Auth::user();
+        $user->load('organizations.apps');
 
-        if ($user->organizations()->whereHas('apps')->exists()) {
+        if ($user->organizations->pluck('apps')->flatten()->count()) {
             return response()->json([
                 'message' => 'The user should delete all apps before deleting the account',
             ], Response::HTTP_PRECONDITION_FAILED);
         }
 
+        if ($user->organizations->where('pivot.role', '!=', Organization::ROLE_OWNER)->count()) {
+            return response()->json([
+                'message' => 'The user should leave all non-owned organizations before deleting the account',
+            ], Response::HTTP_PRECONDITION_FAILED);
+        }
+
+        $user->organizations()->delete();
+        $user->organizations()->detach();
         $user->delete();
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
