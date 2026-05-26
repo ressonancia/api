@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\Route;
 
 if (! config('ressonance.self_hosted')) {
     Route::middleware(['auth:api'])->group(function () {
-        Route::post('/organizations', [OrganizationController::class, 'store'])->name('api.organizations.store');
+        Route::post('/organizations', [OrganizationController::class, 'store'])
+            ->name('api.organizations.store');
+
+        Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy'])
+            ->name('api.organizations.destroy');
 
         Route::post('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware('signed')
