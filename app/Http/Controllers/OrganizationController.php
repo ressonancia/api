@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateOrganizationRequest;
+use App\Http\Requests\UpdateOrganizationRequest;
 use App\Models\App;
 use App\Models\Organization;
 use Illuminate\Http\JsonResponse;
@@ -53,5 +54,16 @@ class OrganizationController extends Controller
         $organization->delete();
 
         return response()->noContent();
+    }
+
+    public function update(Organization $organization, UpdateOrganizationRequest $request): JsonResponse
+    {
+        if (Auth::user()->cannot('edit', $organization)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $organization->update($request->validated());
+
+        return response()->json($organization->refresh());
     }
 }
