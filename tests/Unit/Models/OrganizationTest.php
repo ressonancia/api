@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\App;
+use App\Models\Invitation;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -39,4 +40,21 @@ it('belongs to many users relation', function () {
     expect($organization->users()->getRelated()::class)->toBe(User::class);
     expect($organization->users())->toBeInstanceOf(BelongsToMany::class);
     expect($organization->users->pluck('id'))->toContain($user->id);
+});
+
+it('has many invitations relation', function () {
+    $organization = Organization::factory()->create();
+    $inviter = User::factory()->create();
+    $invitation = Invitation::create([
+        'organization_id' => $organization->id,
+        'inviter_id' => $inviter->id,
+        'name' => 'Invitee Name',
+        'email' => 'invitee@example.com',
+        'role' => Organization::ROLE_USER,
+        'expires_at' => now()->addDay(),
+    ]);
+
+    expect($organization->invitations()->getRelated()::class)->toBe(Invitation::class);
+    expect($organization->invitations())->toBeInstanceOf(HasMany::class);
+    expect($organization->invitations->pluck('id'))->toContain($invitation->id);
 });

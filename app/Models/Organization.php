@@ -48,4 +48,9 @@ class Organization extends Model
     {
         return $this->hasMany(App::class);
     }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
+    }
 }

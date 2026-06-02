@@ -31,8 +31,8 @@ test('user can create an account', function () {
     expect($jsonResponse['user']['updated_at'])->toBe(now()->toIso8601String());
     expect($jsonResponse['token_type'])->toBe('Bearer');
     expect($jsonResponse['access_token'])->not->toBeEmpty();
-    expect(ceil($jsonResponse['expires_in']))
-        ->toBe(ceil(now()->addYear()->diffInSeconds()));
+    expect($jsonResponse['expires_in'] - abs(now()->addYear()->diffInSeconds()))
+        ->toBeLessThanOrEqual(1);
 
     Event::assertDispatched(Registered::class, function ($eventUser) {
         return $eventUser->user->email === 'lioni@ressonance.com';

@@ -54,4 +54,14 @@ return [
         'RESSONANCE_SELF_HOSTED',
         true
     ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Organization Invitation Expiration (hours)
+    |--------------------------------------------------------------------------
+    */
+    'organization_invitation_expiration_hours' => env(
+        'RESSONANCE_ORGANIZATION_INVITATION_EXPIRATION_HOURS',
+        48
+    ),
 ];

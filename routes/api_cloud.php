@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\OrganizationInvitationController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SocialLoginController;
@@ -19,6 +20,9 @@ if (! config('ressonance.self_hosted')) {
 
         Route::patch('/organizations/{organization}', [OrganizationController::class, 'update'])
             ->name('api.organizations.update');
+
+        Route::post('/organizations/{organization}/invitations', [OrganizationInvitationController::class, 'store'])
+            ->name('api.organizations.invitations.store');
 
         Route::post('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware('signed')
@@ -40,6 +44,11 @@ if (! config('ressonance.self_hosted')) {
 
         Route::post('reset-password', [ResetPasswordController::class, 'reset'])
             ->name('password.reset');
+
+        Route::post('/invitations/{invitation}/accept', [OrganizationInvitationController::class, 'accept'])
+            ->middleware('signed')
+            ->middleware('throttle:5,1')
+            ->name('api.invitations.accept');
     });
 
     Route::post('/account', [AccountController::class, 'store'])->name('api.account.store');
