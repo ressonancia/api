@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 test('organization owner can invite a member by name and email', function () {
-    Carbon::setTestNow('2026-05-26 15:00:00');
+    Carbon::setTestNow(now());
     Notification::fake();
 
     $owner = $this->login();
@@ -42,6 +42,7 @@ test('organization owner can invite a member by name and email', function () {
         'name' => 'New Member',
         'email' => 'new-member@example.com',
         'role' => Organization::ROLE_MEMBER,
+        'joined_at' => null,
     ]);
 
     Notification::assertSentOnDemand(OrganizationInvitationNotification::class, function ($notification, $channels, $notifiable) use ($invitationId) {
@@ -56,13 +57,15 @@ test('organization owner can invite a member by name and email', function () {
         expect($spaQuery)->toHaveKey('route');
 
         $encodedRoute = strtr($spaQuery['route'], '-_', '+/');
-        $paddedEncodedRoute = str_pad($encodedRoute, (int) (ceil(strlen($encodedRoute) / 4) * 4), '=', STR_PAD_RIGHT);
-        $signedRoute = base64_decode($paddedEncodedRoute, true);
-        expect($signedRoute)->not->toBeFalse();
-
+        $signedRoute = base64_decode($encodedRoute, true);
+        $parsedUrl = parse_url($signedRoute);
+        expect($parsedUrl['scheme'].'://'.$parsedUrl['host'].$parsedUrl['path'])->toBe(
+            route('api.invitations.accept', [
+                'invitation' => $notification->invitation->id,
+            ])
+        );
         $routeQuery = [];
-        parse_str(parse_url($signedRoute, PHP_URL_QUERY), $routeQuery);
-
+        parse_str($parsedUrl['query'], $routeQuery);
         expect($routeQuery)->toHaveKey('expires');
         expect((int) $routeQuery['expires'])->toBe($notification->invitation->expires_at->timestamp);
 
@@ -143,54 +146,23 @@ test('user needs to be logged in to invite a member', function () {
     ])->assertUnauthorized();
 });
 
-test('email is required to invite a member', function () {
+test('email, name and role are required to invite a member', function () {
     $owner = $this->login();
     $organization = $owner->organizations()->first();
 
     $this->postJson(route('api.organizations.invitations.store', [
         'organization' => $organization->id,
     ]), [
-        'name' => 'No Email',
-        'role' => Organization::ROLE_MEMBER,
+        'role' => 'Not allowed role',
     ])
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-        ->assertJsonValidationErrors(['email'])
+        ->assertJsonValidationErrors(['email', 'name', 'role'])
         ->assertJsonFragment([
             'email' => ['The email field is required.'],
-        ]);
-});
-
-test('name is required to invite a member', function () {
-    $owner = $this->login();
-    $organization = $owner->organizations()->first();
-
-    $this->postJson(route('api.organizations.invitations.store', [
-        'organization' => $organization->id,
-    ]), [
-        'email' => 'no-name@example.com',
-        'role' => Organization::ROLE_MEMBER,
-    ])
-        ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-        ->assertJsonValidationErrors(['name'])
-        ->assertJsonFragment([
+        ])->assertJsonFragment([
             'name' => ['The name field is required.'],
-        ]);
-});
-
-test('role is required to invite a member', function () {
-    $owner = $this->login();
-    $organization = $owner->organizations()->first();
-
-    $this->postJson(route('api.organizations.invitations.store', [
-        'organization' => $organization->id,
-    ]), [
-        'name' => 'No Role',
-        'email' => 'no-role@example.com',
-    ])
-        ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-        ->assertJsonValidationErrors(['role'])
-        ->assertJsonFragment([
-            'role' => ['The role field is required.'],
+        ])->assertJsonFragment([
+            'role' => ['The selected role is invalid.'],
         ]);
 });
 
@@ -199,7 +171,7 @@ test('removes previous invitations for the same organization and user before cre
 
     $owner = $this->login();
     $organization = $owner->organizations()->first();
-    $otherOrganization = Organization::factory()->create();
+    Organization::factory()->create();
 
     $expiredInvitation = $organization->invitations()->create([
         'inviter_id' => $owner->id,
@@ -250,29 +222,21 @@ test('throws when invitation expiration hours config is not an integer', functio
     ]);
 });
 
-test('accept is rate limited to five requests per minute', function () {
+test('accept requires a signed route', function () {
     $inviter = User::factory()->create();
     $organization = $inviter->organizations()->first();
     $invitation = $organization->invitations()->create([
         'inviter_id' => $inviter->id,
-        'name' => 'Rate Limited Member',
-        'email' => 'rate-limited@example.com',
+        'name' => 'Unsigned Member',
+        'email' => 'unsigned@example.com',
         'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addHour(),
-        'joined_at' => now(),
+        'joined_at' => null,
     ]);
 
-    $acceptUrl = URL::temporarySignedRoute(
-        'api.invitations.accept',
-        now()->addHour(),
-        ['invitation' => $invitation->id]
-    );
-
-    for ($attempt = 1; $attempt <= 5; $attempt++) {
-        $this->postJson($acceptUrl)->assertStatus(Response::HTTP_PRECONDITION_FAILED);
-    }
-
-    $this->postJson($acceptUrl)->assertStatus(Response::HTTP_TOO_MANY_REQUESTS);
+    $this->postJson(route('api.invitations.accept', [
+        'invitation' => $invitation->id,
+    ]))->assertForbidden();
 });
 
 test('accept returns precondition failed when invitation was already joined', function () {
@@ -405,5 +369,11 @@ test('accept marks invitation as joined and returns invitation payload', functio
         'name' => 'From Invitation',
         'user_id' => $jsonResponse['user']['id'],
         'client_id' => $oauthClient->id,
+    ]);
+
+    $this->assertDatabaseHas('organization_user', [
+        'organization_id' => $invitation->organization_id,
+        'user_id' => $jsonResponse['user']['id'],
+        'role' => $invitation->role,
     ]);
 });

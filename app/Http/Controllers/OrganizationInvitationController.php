@@ -39,6 +39,7 @@ class OrganizationInvitationController extends Controller
             ->where('email', $validated['email'])
             ->get();
 
+        // check if the user haved accepted the same invite
         if ($invitations->whereNotNull('joined_at')->count()) {
             abort(Response::HTTP_PRECONDITION_FAILED);
         }
@@ -95,9 +96,9 @@ class OrganizationInvitationController extends Controller
         $invitation->save();
 
         $user = User::firstOrCreate([
-            'name' => $invitation->name,
-        ], [
             'email' => $invitation->email,
+        ], [
+            'name' => $invitation->name,
             'email_verified_at' => now(),
         ]);
 
