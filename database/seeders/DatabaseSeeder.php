@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 use App\Console\Commands\Install;
 use App\Models\App;
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use Laravel\Passport\Client;
 
 class DatabaseSeeder extends Seeder
@@ -28,6 +30,18 @@ class DatabaseSeeder extends Seeder
             'name' => 'Zaphod Beeblebrox',
             'email' => 'zaphod@l30.space',
             'password' => bcrypt('secret'),
+        ]);
+
+        $organizations = Organization::factory()->times(2)->create();
+
+        $user->organizations()->attach($organizations->first()->id, [
+            'id' => (string) Str::uuid(),
+            'role' => Organization::ROLE_ADMIN,
+        ]);
+
+        $user->organizations()->attach($organizations->last()->id, [
+            'id' => (string) Str::uuid(),
+            'role' => Organization::ROLE_MEMBER,
         ]);
 
         Client::truncate();

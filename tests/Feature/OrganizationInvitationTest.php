@@ -23,7 +23,7 @@ test('organization owner can invite a member by name and email', function () {
     ]), [
         'name' => 'New Member',
         'email' => 'new-member@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     $response->assertStatus(Response::HTTP_CREATED)
@@ -31,7 +31,7 @@ test('organization owner can invite a member by name and email', function () {
         ->assertJsonPath('inviter_id', $owner->id)
         ->assertJsonPath('name', 'New Member')
         ->assertJsonPath('email', 'new-member@example.com')
-        ->assertJsonPath('role', Organization::ROLE_USER);
+        ->assertJsonPath('role', Organization::ROLE_MEMBER);
 
     $invitationId = $response->json('id');
 
@@ -41,14 +41,14 @@ test('organization owner can invite a member by name and email', function () {
         'inviter_id' => $owner->id,
         'name' => 'New Member',
         'email' => 'new-member@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     Notification::assertSentOnDemand(OrganizationInvitationNotification::class, function ($notification, $channels, $notifiable) use ($invitationId) {
         expect($notifiable->routes['mail'])->toBe('new-member@example.com');
         expect($notification->invitation->id)->toBe($invitationId);
         expect($notification->invitation->name)->toBe('New Member');
-        expect($notification->invitation->role)->toBe(Organization::ROLE_USER);
+        expect($notification->invitation->role)->toBe(Organization::ROLE_MEMBER);
         expect($notification->invitationUrl)->toStartWith(config('app.spa_url').'/email-invitation?');
 
         $spaQuery = [];
@@ -100,7 +100,7 @@ test('organization admin can invite a member by name and email', function () {
     Notification::assertSentOnDemand(OrganizationInvitationNotification::class);
 });
 
-test('organization user role cannot invite members', function () {
+test('organization member role cannot invite members', function () {
     Notification::fake();
 
     $organization = Organization::factory()->create();
@@ -108,7 +108,7 @@ test('organization user role cannot invite members', function () {
 
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     $this->logIn($user);
@@ -118,7 +118,7 @@ test('organization user role cannot invite members', function () {
     ]), [
         'name' => 'Forbidden User',
         'email' => 'forbidden@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ])->assertForbidden();
 
     $this->assertDatabaseMissing('invitations', [
@@ -139,7 +139,7 @@ test('user needs to be logged in to invite a member', function () {
     ]), [
         'name' => 'Unauthorized User',
         'email' => 'unauthorized@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ])->assertUnauthorized();
 });
 
@@ -151,7 +151,7 @@ test('email is required to invite a member', function () {
         'organization' => $organization->id,
     ]), [
         'name' => 'No Email',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ])
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonValidationErrors(['email'])
@@ -168,7 +168,7 @@ test('name is required to invite a member', function () {
         'organization' => $organization->id,
     ]), [
         'email' => 'no-name@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ])
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonValidationErrors(['name'])
@@ -205,7 +205,7 @@ test('removes previous invitations for the same organization and user before cre
         'inviter_id' => $owner->id,
         'name' => 'Expired Member',
         'email' => 'new-member@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addHour(),
         'joined_at' => null,
     ]);
@@ -246,7 +246,7 @@ test('throws when invitation expiration hours config is not an integer', functio
     ]), [
         'name' => 'New Member',
         'email' => 'new-member@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 });
 
@@ -257,7 +257,7 @@ test('accept is rate limited to five requests per minute', function () {
         'inviter_id' => $inviter->id,
         'name' => 'Rate Limited Member',
         'email' => 'rate-limited@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addHour(),
         'joined_at' => now(),
     ]);
@@ -282,7 +282,7 @@ test('accept returns precondition failed when invitation was already joined', fu
         'inviter_id' => $inviter->id,
         'name' => 'Joined Member',
         'email' => 'joined@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addHour(),
         'joined_at' => now(),
     ]);
@@ -303,7 +303,7 @@ test('accept returns precondition failed when invitation is expired', function (
         'inviter_id' => $inviter->id,
         'name' => 'Expired Member',
         'email' => 'expired@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->subMinute(),
         'joined_at' => null,
     ]);
@@ -324,7 +324,7 @@ test('accept returns precondition failed when invitation organization does not e
         'inviter_id' => $inviter->id,
         'name' => 'Missing Org Member',
         'email' => 'missing-org@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addHour(),
         'joined_at' => null,
     ]);
@@ -347,7 +347,7 @@ test('accept returns precondition failed when invitation inviter does not exist'
         'inviter_id' => $inviter->id,
         'name' => 'Missing Inviter Member',
         'email' => 'missing-inviter@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addHour(),
         'joined_at' => null,
     ]);

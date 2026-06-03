@@ -15,7 +15,7 @@ class InviteOrganizationMemberRequest extends FormRequest
             'email' => 'required|email|max:255',
             'role' => ['required', 'string', Rule::in([
                 Organization::ROLE_ADMIN,
-                Organization::ROLE_USER,
+                Organization::ROLE_MEMBER,
             ])],
         ];
     }

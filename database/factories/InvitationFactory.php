@@ -21,7 +21,7 @@ class InvitationFactory extends Factory
             'inviter_id' => rand(1, 100),
             'name' => fake()->name(),
             'email' => fake()->safeEmail(),
-            'role' => fake()->randomElement([Organization::ROLE_ADMIN, Organization::ROLE_USER]),
+            'role' => fake()->randomElement([Organization::ROLE_ADMIN, Organization::ROLE_MEMBER]),
             'expires_at' => now()->addDay(),
             'joined_at' => null,
         ];

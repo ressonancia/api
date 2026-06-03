@@ -65,13 +65,13 @@ test('organization admin can update organization name', function () {
     ]);
 });
 
-test('organization member with user role cannot update organization name', function () {
+test('organization member with member role cannot update organization name', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     $this->logIn($user);

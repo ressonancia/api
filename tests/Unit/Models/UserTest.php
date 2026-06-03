@@ -13,7 +13,7 @@ it('belongs to many organizations relation', function () {
 
     $user->organizations()->attach($organization->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     expect($user->organizations()->getRelated()::class)->toBe(Organization::class);

@@ -57,12 +57,12 @@ test('user cannot delete an app from another organization', function () {
         ->assertForbidden();
 });
 
-test('organization member with user role cannot delete an app', function () {
+test('organization member with member role cannot delete an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
     $app = App::factory()->create([
         'organization_id' => $organization->id,

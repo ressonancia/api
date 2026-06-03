@@ -57,12 +57,12 @@ test('user cannot create app for organization they do not belong to', function (
     ])->assertForbidden();
 });
 
-test('organization member with user role cannot create an app', function () {
+test('organization member with member role cannot create an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     $this->logIn($user);

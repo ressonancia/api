@@ -50,7 +50,7 @@ it('has many invitations relation', function () {
         'inviter_id' => $inviter->id,
         'name' => 'Invitee Name',
         'email' => 'invitee@example.com',
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
         'expires_at' => now()->addDay(),
     ]);
 

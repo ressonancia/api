@@ -32,6 +32,7 @@ test('user cannot delete account while attached to a non-owned organization', fu
     $organization = Organization::factory()->create();
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     $response = $this->deleteJson(route('api.users.destroy'));
@@ -52,6 +53,7 @@ test('user should delete apps before delete the account', function () {
     $secondUserOrganization = Organization::factory()->create();
     $secondUserOrganization->users()->attach($user->id, [
         'id' => Str::uuid()->toString(),
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     App::factory()->create([

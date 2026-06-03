@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('inviter_id')->index();
             $table->string('name');
             $table->string('email');
-            $table->string('role')->default(Organization::ROLE_USER);
+            $table->string('role')->default(Organization::ROLE_MEMBER);
             $table->timestamp('expires_at');
             $table->timestamp('joined_at')->nullable();
             $table->timestamps();

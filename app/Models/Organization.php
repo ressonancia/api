@@ -16,7 +16,7 @@ class Organization extends Model
 
     public const ROLE_ADMIN = 'admin';
 
-    public const ROLE_USER = 'user';
+    public const ROLE_MEMBER = 'member';
 
     public $incrementing = false;
 

@@ -14,7 +14,7 @@ it('allows viewing organization for members', function () {
 
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     expect($policy->view($user, $organization))->toBeTrue();
@@ -54,14 +54,14 @@ it('allows editing organization for admins', function () {
     expect($policy->edit($user, $organization))->toBeTrue();
 });
 
-it('denies editing organization for users', function () {
+it('denies editing organization for members', function () {
     $policy = new OrganizationPolicy;
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
         'id' => (string) Str::uuid(),
-        'role' => Organization::ROLE_USER,
+        'role' => Organization::ROLE_MEMBER,
     ]);
 
     expect($policy->edit($user, $organization))->toBeFalse();

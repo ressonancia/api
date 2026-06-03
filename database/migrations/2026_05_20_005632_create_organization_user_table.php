@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('organization_id')->index();
             $table->unsignedBigInteger('user_id')->index();
-            $table->string('role')->default(Organization::ROLE_USER);
+            $table->string('role')->default(Organization::ROLE_MEMBER);
             $table->timestamps();
             $table->unique(['organization_id', 'user_id']);
         });
