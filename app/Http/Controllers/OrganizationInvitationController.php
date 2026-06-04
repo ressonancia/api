@@ -94,7 +94,7 @@ class OrganizationInvitationController extends Controller
         $invitation->joined_at = now();
         $invitation->save();
 
-        $user = User::firstOrCreate([
+        $user = User::withoutOrganizationCreation()->firstOrCreate([
             'email' => $invitation->email,
         ], [
             'name' => $invitation->name,

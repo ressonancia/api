@@ -7,6 +7,11 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 test('organization owner can update organization name', function () {
+    /**
+     * withOrganizationCreation fix race condition with withoutOrganizationCreation
+     * It is called in other test and needs to be reset
+     */
+    User::withOrganizationCreation();
     $user = $this->login();
     $organization = $user->organizations()->first();
 

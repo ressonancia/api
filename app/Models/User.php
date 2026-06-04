@@ -14,6 +14,8 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected static bool $shouldCreateOrganization = true;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -61,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected static function booted(): void
     {
         static::created(function (User $user): void {
-            if ($user->organizations()->exists()) {
+            if (! static::shouldCreateOrganization() || $user->organizations()->exists()) {
                 return;
             }
 
@@ -87,5 +89,27 @@ class User extends Authenticatable implements MustVerifyEmail
             ->using(OrganizationUser::class)
             ->withPivot(['id', 'role'])
             ->withTimestamps();
+    }
+
+    public static function withoutOrganizationCreation(): self
+    {
+        static::$shouldCreateOrganization = false;
+
+        return new static;
+    }
+
+    public static function withOrganizationCreation(): self
+    {
+        static::$shouldCreateOrganization = true;
+
+        return new static;
+    }
+
+    private static function shouldCreateOrganization(): bool
+    {
+        $shouldCreateOrganization = static::$shouldCreateOrganization;
+        static::$shouldCreateOrganization = true;
+
+        return $shouldCreateOrganization;
     }
 }
