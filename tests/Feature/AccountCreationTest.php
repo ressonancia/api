@@ -1,11 +1,14 @@
 <?php
 
+use App\Models\Organization;
+use App\Models\OrganizationUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Laravel\Passport\Token;
 use SendKit\Laravel\Facades\SendKit;
 
 test('user can create an account', function () {
@@ -38,23 +41,23 @@ test('user can create an account', function () {
         return $eventUser->user->email === 'lioni@ressonance.com';
     });
 
-    $this->assertDatabaseHas('users', [
+    $this->assertDatabaseHas(User::class, [
         'name' => 'Fabio Lioni',
         'email' => 'lioni@ressonance.com',
     ]);
 
-    $this->assertDatabaseHas('oauth_access_tokens', [
+    $this->assertDatabaseHas(Token::class, [
         'name' => 'Pending Validation',
         'user_id' => $jsonResponse['user']['id'],
         'client_id' => $oauthClient->id,
     ]);
 
-    $this->assertDatabaseHas('organization_user', [
+    $this->assertDatabaseHas(OrganizationUser::class, [
         'user_id' => $jsonResponse['user']['id'],
         'role' => 'owner',
     ]);
 
-    $this->assertDatabaseHas('organizations', [
+    $this->assertDatabaseHas(Organization::class, [
         'name' => "Fabio Lioni's Organization",
     ]);
 });
@@ -164,7 +167,7 @@ test('user email can be blocked by sendkit validation', function () {
 
     Event::assertNotDispatched(Registered::class);
 
-    $this->assertDatabaseMissing('users', [
+    $this->assertDatabaseMissing(User::class, [
         'email' => 'blocked@ressonance.com',
     ]);
 });

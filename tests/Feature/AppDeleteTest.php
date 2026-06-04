@@ -28,12 +28,12 @@ test('user can delete an app', function () {
     ]));
     $response->assertStatus(Response::HTTP_NO_CONTENT);
 
-    $this->assertDatabaseMissing('apps', [
+    $this->assertDatabaseMissing(App::class, [
         'id' => $app->id,
         'deleted_at' => null,
     ]);
 
-    $this->assertDatabaseHas('apps', [
+    $this->assertDatabaseHas(App::class, [
         'id' => $appToKeep->id,
         'deleted_at' => null,
     ]);
@@ -95,7 +95,7 @@ test('organization member with admin role can delete an app', function () {
     ]))
         ->assertStatus(Response::HTTP_NO_CONTENT);
 
-    $this->assertSoftDeleted('apps', [
+    $this->assertSoftDeleted(App::class, [
         'id' => $app->id,
     ]);
 
@@ -121,7 +121,7 @@ test('organization member with owner role can delete an app', function () {
     ]))
         ->assertStatus(Response::HTTP_NO_CONTENT);
 
-    $this->assertSoftDeleted('apps', [
+    $this->assertSoftDeleted(App::class, [
         'id' => $app->id,
     ]);
 

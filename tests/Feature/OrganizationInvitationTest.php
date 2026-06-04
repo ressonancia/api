@@ -2,6 +2,7 @@
 
 use App\Models\Invitation;
 use App\Models\Organization;
+use App\Models\OrganizationUser;
 use App\Models\User;
 use App\Notifications\OrganizationInvitationNotification;
 use Carbon\Carbon;
@@ -9,6 +10,7 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
+use Laravel\Passport\Token;
 
 test('organization owner can invite a member by name and email', function () {
     Carbon::setTestNow(now());
@@ -34,7 +36,7 @@ test('organization owner can invite a member by name and email', function () {
 
     $invitationId = $response->json('id');
 
-    $this->assertDatabaseHas('invitations', [
+    $this->assertDatabaseHas(Invitation::class, [
         'id' => $invitationId,
         'organization_id' => $organization->id,
         'inviter_id' => $owner->id,
@@ -121,7 +123,7 @@ test('organization member role cannot invite members', function () {
         'role' => Organization::ROLE_MEMBER,
     ])->assertForbidden();
 
-    $this->assertDatabaseMissing('invitations', [
+    $this->assertDatabaseMissing(Invitation::class, [
         'organization_id' => $organization->id,
         'email' => 'forbidden@example.com',
     ]);
@@ -378,13 +380,13 @@ test('accept marks invitation as joined and returns invitation payload', functio
     expect($invitation->fresh()->joined_at->toIso8601String())
         ->toBe(now()->toIso8601String());
 
-    $this->assertDatabaseHas('oauth_access_tokens', [
+    $this->assertDatabaseHas(Token::class, [
         'name' => 'From Invitation',
         'user_id' => $jsonResponse['user']['id'],
         'client_id' => $oauthClient->id,
     ]);
 
-    $this->assertDatabaseHas('organization_user', [
+    $this->assertDatabaseHas(OrganizationUser::class, [
         'organization_id' => $invitation->organization_id,
         'user_id' => $jsonResponse['user']['id'],
         'role' => $invitation->role,

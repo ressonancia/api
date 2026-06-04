@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config as FacadesConfig;
+use Laravel\Passport\Client;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class);
@@ -21,12 +22,12 @@ it('can install ressonance', function () {
         ->expectsOutputToContain('Nothing to migrate')
         ->assertExitCode(0);
 
-    $this->assertDatabaseHas('oauth_clients', [
+    $this->assertDatabaseHas(Client::class, [
         'name' => 'First Party SPA',
         'secret' => 'Dq9p296oaZtbaH7HX8v9gD1nuHaWmLSlox8a9Bfk',
     ]);
 
-    $this->assertDatabaseHas('oauth_clients', [
+    $this->assertDatabaseHas(Client::class, [
         'name' => 'Ressonance Personal Access Client',
         'secret' => 'qhTkBLYHfqtWRptHfHadOBs3cKM1jmZIkchqSKI2',
     ]);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\RefreshReverb;
+use App\Models\App;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -36,7 +37,7 @@ test('user can create an app', function () {
     ]);
     $response->assertStatus(Response::HTTP_CREATED);
 
-    $this->assertDatabaseHas('apps', [
+    $this->assertDatabaseHas(App::class, [
         'organization_id' => $organization->id,
         'app_key' => Str::lower($key),
         'app_secret' => Str::lower($secret),
@@ -90,7 +91,7 @@ test('organization member with admin role can create an app', function () {
 
     $response->assertStatus(Response::HTTP_CREATED);
 
-    $this->assertDatabaseHas('apps', [
+    $this->assertDatabaseHas(App::class, [
         'organization_id' => $organization->id,
         'app_name' => 'Batocera Cloud',
         'app_language_choice' => 'PHP',
@@ -117,7 +118,7 @@ test('organization member with owner role can create an app', function () {
 
     $response->assertStatus(Response::HTTP_CREATED);
 
-    $this->assertDatabaseHas('apps', [
+    $this->assertDatabaseHas(App::class, [
         'organization_id' => $organization->id,
         'app_name' => 'Batocera Cloud',
         'app_language_choice' => 'PHP',

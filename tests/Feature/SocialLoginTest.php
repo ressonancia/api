@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\OrganizationUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Laravel\Passport\Token;
 use Laravel\Socialite\Socialite;
 
 beforeEach(function () {
@@ -46,13 +48,13 @@ test('user can signup with social accounts', function () {
         'email_verified_at' => now(),
     ]);
 
-    $this->assertDatabaseHas('oauth_access_tokens', [
+    $this->assertDatabaseHas(Token::class, [
         'name' => 'From Social Login',
         'user_id' => User::where('email', $user->email)->first()->id,
         'client_id' => $this->oauthClient->id,
     ]);
 
-    $this->assertDatabaseHas('organization_user', [
+    $this->assertDatabaseHas(OrganizationUser::class, [
         'user_id' => User::where('email', $user->email)->first()->id,
         'role' => 'owner',
     ]);

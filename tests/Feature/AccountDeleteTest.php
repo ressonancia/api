@@ -2,6 +2,7 @@
 
 use App\Models\App;
 use App\Models\Organization;
+use App\Models\OrganizationUser;
 use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
@@ -21,7 +22,7 @@ test('user can delete account', function () {
         'id' => $organization->id,
     ]);
 
-    $this->assertDatabaseMissing('organization_user', [
+    $this->assertDatabaseMissing(OrganizationUser::class, [
         'organization_id' => $organization->id,
     ]);
 });
@@ -40,7 +41,7 @@ test('user cannot delete account while attached to a non-owned organization', fu
         'The user should leave all non-owned organizations before deleting the account'
     );
 
-    $this->assertDatabaseHas('users', [
+    $this->assertDatabaseHas(User::class, [
         'id' => $user->id,
     ]);
 });
@@ -68,7 +69,7 @@ test('user should delete apps before delete the account', function () {
         'The user should delete all apps before deleting the account'
     );
 
-    $this->assertDatabaseHas('users', [
+    $this->assertDatabaseHas(User::class, [
         'id' => $user->id,
     ]);
 });

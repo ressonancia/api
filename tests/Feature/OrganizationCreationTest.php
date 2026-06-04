@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Organization;
+use App\Models\OrganizationUser;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 
@@ -15,12 +17,12 @@ test('user can create organization and becomes owner', function () {
 
     $organizationId = $response->json('id');
 
-    $this->assertDatabaseHas('organizations', [
+    $this->assertDatabaseHas(Organization::class, [
         'id' => $organizationId,
         'name' => 'Ressonance Labs',
     ]);
 
-    $this->assertDatabaseHas('organization_user', [
+    $this->assertDatabaseHas(OrganizationUser::class, [
         'organization_id' => $organizationId,
         'user_id' => $user->id,
         'role' => 'owner',

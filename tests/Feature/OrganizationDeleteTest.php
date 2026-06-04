@@ -2,6 +2,7 @@
 
 use App\Models\App;
 use App\Models\Organization;
+use App\Models\OrganizationUser;
 use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
@@ -34,16 +35,16 @@ test('owner can delete organization and all organization apps are deleted', func
 
     $response->assertStatus(Response::HTTP_NO_CONTENT);
 
-    $this->assertDatabaseMissing('organizations', [
+    $this->assertDatabaseMissing(Organization::class, [
         'id' => $organization->id,
     ]);
 
-    $this->assertSoftDeleted('apps', [
+    $this->assertSoftDeleted(App::class, [
         'id' => $app->id,
         'organization_id' => $organization->id,
     ]);
 
-    $this->assertDatabaseMissing('organization_user', [
+    $this->assertDatabaseMissing(OrganizationUser::class, [
         'organization_id' => $organization->id,
     ]);
 });
@@ -66,7 +67,7 @@ test('user cannot delete organization if user is not owner', function () {
         'organization' => $organization->id,
     ]))->assertNotFound();
 
-    $this->assertDatabaseHas('organizations', [
+    $this->assertDatabaseHas(Organization::class, [
         'id' => $organization->id,
     ]);
 });
@@ -82,7 +83,7 @@ test('user cannot delete last owned organization', function () {
     $response->assertStatus(Response::HTTP_PRECONDITION_FAILED);
     $response->assertJsonPath('message', 'The user cannot delete the last owned organization');
 
-    $this->assertDatabaseHas('organizations', [
+    $this->assertDatabaseHas(Organization::class, [
         'id' => $organization->id,
     ]);
 });

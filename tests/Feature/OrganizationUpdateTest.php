@@ -80,7 +80,7 @@ test('organization member with member role cannot update organization name', fun
         'name' => 'Should Not Update',
     ])->assertNotFound();
 
-    $this->assertDatabaseMissing('organizations', [
+    $this->assertDatabaseMissing(Organization::class, [
         'id' => $organization->id,
         'name' => 'Should Not Update',
     ]);
