@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 
 if (! config('ressonance.self_hosted')) {
     Route::middleware(['auth:api'])->group(function () {
+        Route::get('/organizations/{organization}', [OrganizationController::class, 'show'])
+            ->name('api.organizations.show');
+
         Route::post('/organizations', [OrganizationController::class, 'store'])
             ->name('api.organizations.store');
 

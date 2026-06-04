@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Log;
 
 class OrganizationController extends Controller
 {
+    public function show(Organization $organization): JsonResponse
+    {
+        if (Auth::user()->cannot('view', $organization)) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
+        return response()->json(
+            $organization->load('users')
+        );
+    }
+
     public function store(CreateOrganizationRequest $request): JsonResponse
     {
         $organization = Organization::create($request->validated());
