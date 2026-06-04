@@ -61,7 +61,6 @@ test('organization member with member role cannot delete an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
     $app = App::factory()->create([
@@ -82,7 +81,6 @@ test('organization member with admin role can delete an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
     $app = App::factory()->create([
@@ -109,7 +107,6 @@ test('organization member with owner role can delete an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_OWNER,
     ]);
     $app = App::factory()->create([

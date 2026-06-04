@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -71,7 +70,6 @@ class User extends Authenticatable implements MustVerifyEmail
             ]);
 
             $user->organizations()->attach($organization->id, [
-                'id' => (string) Str::uuid(),
                 'role' => Organization::ROLE_OWNER,
             ]);
         });
@@ -86,6 +84,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class)
+            ->using(OrganizationUser::class)
             ->withPivot(['id', 'role'])
             ->withTimestamps();
     }

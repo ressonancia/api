@@ -5,7 +5,6 @@ use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
-use Illuminate\Support\Str;
 
 test('user can delete account', function () {
     $user = $this->login();
@@ -31,7 +30,6 @@ test('user cannot delete account while attached to a non-owned organization', fu
     $user = $this->login();
     $organization = Organization::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 
@@ -52,7 +50,6 @@ test('user should delete apps before delete the account', function () {
     $organization = $user->organizations()->first();
     $secondUserOrganization = Organization::factory()->create();
     $secondUserOrganization->users()->attach($user->id, [
-        'id' => Str::uuid()->toString(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 

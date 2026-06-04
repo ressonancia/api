@@ -7,7 +7,6 @@ use App\Models\App;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Laravel\Passport\Client;
 
 class DatabaseSeeder extends Seeder
@@ -35,12 +34,10 @@ class DatabaseSeeder extends Seeder
         $organizations = Organization::factory()->times(2)->create();
 
         $user->organizations()->attach($organizations->first()->id, [
-            'id' => (string) Str::uuid(),
             'role' => Organization::ROLE_ADMIN,
         ]);
 
         $user->organizations()->attach($organizations->last()->id, [
-            'id' => (string) Str::uuid(),
             'role' => Organization::ROLE_MEMBER,
         ]);
 

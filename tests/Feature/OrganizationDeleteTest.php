@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 test('owner can delete organization and all organization apps are deleted', function () {
     $user = $this->login();
@@ -15,7 +14,6 @@ test('owner can delete organization and all organization apps are deleted', func
 
     $preconditionOrganization = Organization::factory()->create();
     $user->organizations()->attach($preconditionOrganization->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_OWNER,
     ]);
 
@@ -55,14 +53,12 @@ test('user cannot delete organization if user is not owner', function () {
     $organization = Organization::factory()->create();
 
     $organization->users()->attach($owner->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_OWNER,
     ]);
 
     $user = $this->login();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
 

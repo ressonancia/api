@@ -9,7 +9,6 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 
 test('organization owner can invite a member by name and email', function () {
     Carbon::setTestNow(now());
@@ -80,7 +79,6 @@ test('organization admin can invite a member by name and email', function () {
     $admin = User::factory()->create();
 
     $organization->users()->attach($admin->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
 
@@ -110,7 +108,6 @@ test('organization member role cannot invite members', function () {
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 
@@ -182,6 +179,15 @@ test('removes previous invitations for the same organization and user before cre
         'joined_at' => null,
     ]);
 
+    $unrelatedInvitation = $organization->invitations()->create([
+        'inviter_id' => $owner->id + 1,
+        'name' => 'Another unrelated invitation',
+        'email' => 'unrelated@example.com',
+        'role' => Organization::ROLE_MEMBER,
+        'expires_at' => now()->addHour(),
+        'joined_at' => null,
+    ]);
+
     $response = $this->postJson(route('api.organizations.invitations.store', [
         'organization' => $organization->id,
     ]), [
@@ -194,6 +200,11 @@ test('removes previous invitations for the same organization and user before cre
 
     $this->assertDatabaseMissing(Invitation::class, ['id' => $expiredInvitation->id]);
     $this->assertDatabaseHas(Invitation::class, ['id' => $newInvitationId]);
+    $this->assertDatabaseHas(Invitation::class, [
+        'id' => $unrelatedInvitation->id,
+        'email' => 'unrelated@example.com',
+        'role' => Organization::ROLE_MEMBER,
+    ]);
 
     expect(Invitation::query()
         ->where('organization_id', $organization->id)
@@ -330,6 +341,8 @@ test('accept returns precondition failed when invitation inviter does not exist'
 test('accept marks invitation as joined and returns invitation payload', function () {
     Carbon::setTestNow(now());
 
+    $unrelatedInvitation = Invitation::factory()->create();
+
     $inviter = User::factory()->create();
     $organization = $inviter->organizations()->first();
     $invitation = $organization->invitations()->create([
@@ -376,4 +389,72 @@ test('accept marks invitation as joined and returns invitation payload', functio
         'user_id' => $jsonResponse['user']['id'],
         'role' => $invitation->role,
     ]);
+
+    $this->assertDatabaseHas(Invitation::class, [
+        'id' => $unrelatedInvitation->id,
+        'email' => $unrelatedInvitation->email,
+        'role' => $unrelatedInvitation->role,
+        'joined_at' => null,
+    ]);
+});
+
+test('accept does not break existing users', function () {
+    Carbon::setTestNow(now());
+
+    $inviter = User::factory()->create();
+
+    $user = User::factory()->create();
+
+    $anotherUserOrganization = Organization::factory()->create();
+    $user->organizations()->attach([
+        $anotherUserOrganization->id => ['role' => Organization::ROLE_MEMBER],
+    ]);
+
+    $oldInvitation = Invitation::factory([
+        'organization_id' => $anotherUserOrganization->id,
+        'email' => $user->email,
+        'joined_at' => now()->subYear(),
+    ])->create();
+
+    $invitedOrganization = Organization::factory()->create();
+
+    $newInvitation = Invitation::factory([
+        'inviter_id' => $inviter->id,
+        'organization_id' => $invitedOrganization->id,
+        'email' => $user->email,
+        'name' => 'User Name From New Invitation',
+        'role' => Organization::ROLE_ADMIN,
+        'expires_at' => now()->addHour(),
+    ])->create();
+
+    $acceptUrl = URL::temporarySignedRoute(
+        'api.invitations.accept',
+        now()->addHour(),
+        ['invitation' => $newInvitation->id]
+    );
+
+    $this->configurePersonalGrantType();
+
+    $this->postJson($acceptUrl)
+        ->assertStatus(Response::HTTP_OK);
+
+    $this->assertDatabaseHas(Invitation::class, [
+        'id' => $newInvitation->id,
+        'email' => $newInvitation->email,
+        'role' => $newInvitation->role,
+        'joined_at' => now(),
+    ]);
+
+    $this->assertDatabaseHas(Invitation::class, [
+        'id' => $oldInvitation->id,
+        'email' => $oldInvitation->email,
+        'role' => $oldInvitation->role,
+        'joined_at' => now()->subYear(),
+    ]);
+
+    $allUserOrganizations = User::findOrFail($user->id)->organizations;
+
+    expect($allUserOrganizations->count())->toBe(3);
+    expect($allUserOrganizations->contains($invitedOrganization))->toBeTrue();
+    expect($allUserOrganizations->contains($anotherUserOrganization))->toBeTrue();
 });

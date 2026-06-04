@@ -12,7 +12,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 use RuntimeException;
 
 class OrganizationInvitationController extends Controller
@@ -102,9 +101,10 @@ class OrganizationInvitationController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        $user->organizations()->attach($invitation->organization_id, [
-            'id' => (string) Str::uuid(),
-            'role' => $invitation->role,
+        $user->organizations()->syncWithoutDetaching([
+            $invitation->organization_id => [
+                'role' => $invitation->role,
+            ],
         ]);
 
         $token = $user->createToken('From Invitation');

@@ -37,7 +37,6 @@ test('organization admin can update organization name', function () {
     $notUpdatedOrganization = $admin->organizations()->first();
 
     $organization->users()->attach($admin->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
 
@@ -70,7 +69,6 @@ test('organization member with member role cannot update organization name', fun
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 

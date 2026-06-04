@@ -61,7 +61,6 @@ test('organization member with member role cannot create an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 
@@ -79,7 +78,6 @@ test('organization member with admin role can create an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
 
@@ -107,7 +105,6 @@ test('organization member with owner role can create an app', function () {
     $organization = Organization::factory()->create();
     $user = User::factory()->create();
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_OWNER,
     ]);
 

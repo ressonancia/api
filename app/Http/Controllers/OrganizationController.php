@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class OrganizationController extends Controller
 {
@@ -19,7 +18,6 @@ class OrganizationController extends Controller
         $organization = Organization::create($request->validated());
 
         Auth::user()->organizations()->attach($organization->id, [
-            'id' => (string) Str::uuid(),
             'role' => Organization::ROLE_OWNER,
         ]);
 

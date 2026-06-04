@@ -3,7 +3,6 @@
 use App\Models\Organization;
 use App\Models\User;
 use App\Policies\OrganizationPolicy;
-use Illuminate\Support\Str;
 
 pest()->extend(Tests\TestCase::class);
 
@@ -13,7 +12,6 @@ it('allows viewing organization for members', function () {
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 
@@ -34,7 +32,6 @@ it('allows editing organization for owners', function () {
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_OWNER,
     ]);
 
@@ -47,7 +44,6 @@ it('allows editing organization for admins', function () {
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
 
@@ -60,7 +56,6 @@ it('denies editing organization for members', function () {
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_MEMBER,
     ]);
 

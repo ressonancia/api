@@ -33,7 +33,6 @@ it('belongs to many users relation', function () {
     $user = User::factory()->create();
 
     $organization->users()->attach($user->id, [
-        'id' => (string) Str::uuid(),
         'role' => Organization::ROLE_ADMIN,
     ]);
 
