@@ -33,7 +33,7 @@ class OrganizationController extends Controller
             ->where('pivot.role', Organization::ROLE_OWNER);
 
         if (! $userOwnedOrganizations->contains($organization)) {
-            abort(Response::HTTP_NOT_FOUND);
+            abort(Response::HTTP_FORBIDDEN);
         }
 
         if ($userOwnedOrganizations->count() <= 1) {
@@ -57,7 +57,7 @@ class OrganizationController extends Controller
     public function update(Organization $organization, UpdateOrganizationRequest $request): JsonResponse
     {
         if (Auth::user()->cannot('edit', $organization)) {
-            abort(Response::HTTP_NOT_FOUND);
+            abort(Response::HTTP_FORBIDDEN);
         }
 
         $organization->update($request->validated());

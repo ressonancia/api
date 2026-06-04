@@ -65,7 +65,7 @@ test('user cannot delete organization if user is not owner', function () {
 
     $this->deleteJson(route('api.organizations.destroy', [
         'organization' => $organization->id,
-    ]))->assertNotFound();
+    ]))->assertForbidden();
 
     $this->assertDatabaseHas(Organization::class, [
         'id' => $organization->id,

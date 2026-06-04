@@ -83,7 +83,7 @@ test('organization member with member role cannot update organization name', fun
         'organization' => $organization->id,
     ]), [
         'name' => 'Should Not Update',
-    ])->assertNotFound();
+    ])->assertForbidden();
 
     $this->assertDatabaseMissing(Organization::class, [
         'id' => $organization->id,
