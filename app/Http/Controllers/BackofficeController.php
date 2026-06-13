@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\App;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class BackofficeController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $apps = App::with('user')->paginate();
+        $perPage = $request->query('per_page', 15);
+        $apps = App::with('user')->paginate($perPage);
 
         $startOfMonthTimestamp = Carbon::now()->startOfMonth()->timestamp;
 
