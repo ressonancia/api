@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AppsController;
+use App\Http\Controllers\BackofficeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,5 @@ Route::middleware(['auth:api'])->group(function () {
         return $request->user();
     })->name('api.me');
 });
+
+Route::get('/backoffice/apps', [BackofficeController::class, 'index'])->name('api.backoffice.apps.index');
