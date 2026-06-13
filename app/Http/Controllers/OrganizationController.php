@@ -6,6 +6,7 @@ use App\Http\Requests\CreateOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationUserRoleRequest;
 use App\Models\App;
+use App\Models\Invitation;
 use App\Models\Organization;
 use App\Models\OrganizationUser;
 use Illuminate\Http\JsonResponse;
@@ -98,5 +99,34 @@ class OrganizationController extends Controller
         $organizationUser->save();
 
         return response()->json($organizationUser->refresh());
+    }
+
+    public function removeUserOrganization(OrganizationUser $organizationUser): Response|JsonResponse
+    {
+        $organization = $organizationUser->organization()->firstOrFail();
+
+        if (Auth::user()->cannot('edit', $organization)) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
+        if ($organizationUser->user_id === Auth::id()) {
+            return response()->json([
+                'message' => 'The user cannot remove themselves from the organization.',
+            ], Response::HTTP_PRECONDITION_FAILED);
+        }
+
+        if ($organizationUser->role === Organization::ROLE_OWNER) {
+            return response()->json([
+                'message' => 'The owner cannot be removed from the organization.',
+            ], Response::HTTP_PRECONDITION_FAILED);
+        }
+
+        Invitation::where('organization_id', $organization->id)
+            ->where('email', $organizationUser->user()->value('email'))
+            ->delete();
+
+        $organizationUser->delete();
+
+        return response()->noContent();
     }
 }

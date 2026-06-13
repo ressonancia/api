@@ -29,6 +29,10 @@ if (! config('ressonance.self_hosted')) {
 
         Route::patch('/organization-users/{organizationUser}/role', [OrganizationController::class, 'updateUserRole'])
             ->name('api.organization-users.role.update');
+
+        Route::delete('/organization-users/{organizationUser}', [OrganizationController::class, 'removeUserOrganization'])
+            ->name('api.organization-users.destroy');
+
         Route::post('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware('signed')
             ->name('verification.verify');
