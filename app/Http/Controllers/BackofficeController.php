@@ -15,7 +15,7 @@ class BackofficeController extends Controller
 
         $startOfMonthTimestamp = Carbon::now()->startOfMonth()->timestamp;
 
-        $apps->getCollection()->transform(function ($app) use ($startOfMonthTimestamp) {
+        $apps->through(function ($app) use ($startOfMonthTimestamp) {
             $currentConnections = DB::table('pulse_values')
                 ->where('type', 'reverb_connections')
                 ->where('key', $app->app_id)
