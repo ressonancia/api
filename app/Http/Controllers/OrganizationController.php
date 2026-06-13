@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
+use App\Http\Requests\UpdateOrganizationUserRoleRequest;
 use App\Models\App;
 use App\Models\Organization;
+use App\Models\OrganizationUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -74,5 +76,27 @@ class OrganizationController extends Controller
         $organization->update($request->validated());
 
         return response()->json($organization->refresh());
+    }
+
+    public function updateUserRole(
+        OrganizationUser $organizationUser,
+        UpdateOrganizationUserRoleRequest $request
+    ): JsonResponse {
+        $organization = $organizationUser->organization()->firstOrFail();
+
+        if (Auth::user()->cannot('edit', $organization)) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
+        if ($organizationUser->role === Organization::ROLE_OWNER) {
+            return response()->json([
+                'message' => 'The owner role cannot be changed.',
+            ], Response::HTTP_PRECONDITION_FAILED);
+        }
+
+        $organizationUser->role = $request->validated('role');
+        $organizationUser->save();
+
+        return response()->json($organizationUser->refresh());
     }
 }

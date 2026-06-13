@@ -27,6 +27,8 @@ if (! config('ressonance.self_hosted')) {
         Route::post('/organizations/{organization}/invitations', [OrganizationInvitationController::class, 'store'])
             ->name('api.organizations.invitations.store');
 
+        Route::patch('/organization-users/{organizationUser}/role', [OrganizationController::class, 'updateUserRole'])
+            ->name('api.organization-users.role.update');
         Route::post('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware('signed')
             ->name('verification.verify');
