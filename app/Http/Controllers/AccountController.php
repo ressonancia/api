@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAccountRequest;
+use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -29,6 +30,14 @@ class AccountController extends Controller
             ],
             Response::HTTP_CREATED
         );
+    }
+
+    public function update(UpdateAccountRequest $request): JsonResponse
+    {
+        $user = Auth::user();
+        $user->update($request->validated());
+
+        return response()->json($user->refresh());
     }
 
     public function destroy(): JsonResponse

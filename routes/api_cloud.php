@@ -44,6 +44,9 @@ if (! config('ressonance.self_hosted')) {
         Route::post('/change-password', [SettingsController::class, 'changePassword'])
             ->name('api.password.change');
 
+        Route::patch('/account', [AccountController::class, 'update'])
+            ->name('api.account.update');
+
         Route::post('/logout', [LogoutController::class, 'logout'])->name('api.logout');
     });
 
