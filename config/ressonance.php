@@ -64,4 +64,14 @@ return [
         'RESSONANCE_ORGANIZATION_INVITATION_EXPIRATION_HOURS',
         48
     ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maximum Organizations Per User
+    |--------------------------------------------------------------------------
+    */
+    'max_organizations_per_user' => env(
+        'RESSONANCE_MAX_ORGANIZATIONS_PER_USER',
+        20
+    ),
 ];

@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class OrganizationController extends Controller
 {
@@ -29,9 +30,27 @@ class OrganizationController extends Controller
 
     public function store(CreateOrganizationRequest $request): JsonResponse
     {
+        $user = Auth::user();
+        $maximumOrganizationsPerUser = config(
+            'ressonance.max_organizations_per_user',
+            20
+        );
+
+        throw_unless(
+            is_int($maximumOrganizationsPerUser),
+            RuntimeException::class,
+            'Configuration "ressonance.max_organizations_per_user" must be an integer'
+        );
+
+        if ($user->organizations()->count() >= $maximumOrganizationsPerUser) {
+            return response()->json([
+                'message' => "The user cannot have more than {$maximumOrganizationsPerUser} organizations",
+            ], Response::HTTP_PRECONDITION_FAILED);
+        }
+
         $organization = Organization::create($request->validated());
 
-        Auth::user()->organizations()->attach($organization->id, [
+        $user->organizations()->attach($organization->id, [
             'role' => Organization::ROLE_OWNER,
         ]);
 
