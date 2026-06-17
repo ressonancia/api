@@ -31,6 +31,20 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('secret'),
         ]);
 
+        $zaphodOrganization = $user->organizations()
+            ->wherePivot('role', Organization::ROLE_OWNER)
+            ->firstOrFail();
+
+        $arthur = User::withoutOrganizationCreation()->factory()->create([
+            'name' => 'Arthur Dent',
+            'email' => 'dent@l30.space',
+            'password' => bcrypt('secret'),
+        ]);
+
+        $arthur->organizations()->attach($zaphodOrganization->id, [
+            'role' => Organization::ROLE_MEMBER,
+        ]);
+
         $organizations = Organization::factory()->times(2)->create();
 
         $user->organizations()->attach($organizations->first()->id, [
@@ -46,7 +60,7 @@ class DatabaseSeeder extends Seeder
         Install::installOauthClients();
 
         App::factory()->times(20)->create([
-            'organization_id' => $user->organizations()->first()->id,
+            'organization_id' => $zaphodOrganization->id,
         ]);
     }
 }
