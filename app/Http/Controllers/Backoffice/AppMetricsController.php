@@ -7,7 +7,6 @@ use App\Models\App;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 
 class AppMetricsController extends Controller
 {
@@ -38,7 +37,7 @@ class AppMetricsController extends Controller
             $metrics[] = [
                 'app_name' => $app->app_name,
                 'app_id' => $app->app_id,
-                'user_mail' => $app->user ? $app->user->email : null,
+                'user_email' => $app->user ? $app->user->email : null,
                 'current_connections' => (int) ($allConnections[$app->app_id] ?? 0),
                 'messages_sent' => (int) ($allMessages[$app->app_id] ?? 0),
             ];
