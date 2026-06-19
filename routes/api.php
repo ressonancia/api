@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AppsController;
+use App\Http\Controllers\Backoffice\AppMetricsController;
+use App\Http\Controllers\MetricsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +17,10 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::post('/apps', [AppsController::class, 'store'])->name('api.apps.store');
     Route::delete('/apps/{app}', [AppsController::class, 'destroy'])->name('api.apps.destroy');
     Route::delete('/delete-account', [AccountController::class, 'destroy'])->name('api.users.destroy');
+    Route::get('/metrics', [MetricsController::class, 'index'])->name('api.metrics.index');
 });
+
+Route::get('/backoffice/apps', [AppMetricsController::class, 'index'])->name('backoffice.apps.index');
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', function (Request $request) {
