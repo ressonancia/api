@@ -453,7 +453,7 @@ test('cannot invite an email that already belongs to an organization member', fu
     ]);
 
     Notification::assertNothingSent();
-})->only();
+});
 
 test('accept does not break existing users', function () {
     Carbon::setTestNow(now());

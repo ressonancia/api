@@ -25,6 +25,7 @@ if (! config('ressonance.self_hosted')) {
             ->name('api.organizations.update');
 
         Route::post('/organizations/{organization}/invitations', [OrganizationInvitationController::class, 'store'])
+            ->middleware('throttle:5,1')
             ->name('api.organizations.invitations.store');
 
         Route::patch('/organization-users/{organizationUser}/role', [OrganizationController::class, 'updateUserRole'])
