@@ -34,6 +34,10 @@ class OrganizationInvitationController extends Controller
             )
         );
 
+        if ($organization->users()->where('email', $validated['email'])->exists()) {
+            abort(Response::HTTP_PRECONDITION_FAILED);
+        }
+
         $invitations = Invitation::where('organization_id', $organization->id)
             ->where('email', $validated['email'])
             ->get();

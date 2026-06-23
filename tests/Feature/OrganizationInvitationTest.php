@@ -428,6 +428,33 @@ test('accept marks invitation as joined and returns invitation payload', functio
     ]);
 });
 
+test('cannot invite an email that already belongs to an organization member', function () {
+    Notification::fake();
+
+    $owner = $this->login();
+    $organization = $owner->organizations()->first();
+
+    $existingMember = User::factory()->create();
+    $organization->users()->attach($existingMember->id, [
+        'role' => Organization::ROLE_MEMBER,
+    ]);
+
+    $this->postJson(route('api.organizations.invitations.store', [
+        'organization' => $organization->id,
+    ]), [
+        'name' => 'Existing Member',
+        'email' => $existingMember->email,
+        'role' => Organization::ROLE_MEMBER,
+    ])->assertStatus(Response::HTTP_PRECONDITION_FAILED);
+
+    $this->assertDatabaseMissing(Invitation::class, [
+        'organization_id' => $organization->id,
+        'email' => $existingMember->email,
+    ]);
+
+    Notification::assertNothingSent();
+})->only();
+
 test('accept does not break existing users', function () {
     Carbon::setTestNow(now());
 
