@@ -18,5 +18,6 @@ class App extends Model
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
+
     }
 }
