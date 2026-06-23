@@ -103,6 +103,34 @@ test('organization admin can invite a member by name and email', function () {
     Notification::assertSentOnDemand(OrganizationInvitationNotification::class);
 });
 
+test('already invited user can not be invited again', function () {
+    Notification::fake();
+
+    $organization = Organization::factory()->create();
+    $admin = User::factory()->create();
+
+    $organization->users()->attach($admin->id, [
+        'role' => Organization::ROLE_ADMIN,
+    ]);
+
+    $invitation = Invitation::factory()->create([
+        'organization_id' => $organization->id,
+        'joined_at' => now(),
+    ]);
+
+    $this->logIn($admin);
+
+    $this->postJson(route('api.organizations.invitations.store', [
+        'organization' => $organization->id,
+    ]), [
+        'name' => $invitation->name,
+        'email' => $invitation->email,
+        'role' => Organization::ROLE_ADMIN,
+    ])->assertStatus(Response::HTTP_PRECONDITION_FAILED);
+
+    Notification::assertNothingSent();
+});
+
 test('organization member role cannot invite members', function () {
     Notification::fake();
 
