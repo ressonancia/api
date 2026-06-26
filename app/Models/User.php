@@ -5,7 +5,7 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -13,6 +13,8 @@ use Laravel\Passport\HasApiTokens;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    protected static bool $shouldCreateOrganization = true;
 
     /**
      * The attributes that are mass assignable.
@@ -58,14 +60,56 @@ class User extends Authenticatable implements MustVerifyEmail
         return $date->format('Y-m-d\TH:i:sP');
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (User $user): void {
+            if (! static::shouldCreateOrganization() || $user->organizations()->exists()) {
+                return;
+            }
+
+            $organization = Organization::create([
+                'name' => $user->name."'s Organization",
+            ]);
+
+            $user->organizations()->attach($organization->id, [
+                'role' => Organization::ROLE_OWNER,
+            ]);
+        });
+    }
+
     public function getAvatarAttribute(): string
     {
         return 'https://www.gravatar.com/avatar/'
             .hash('sha256', strtolower(trim($this->email))).'?s=40';
     }
 
-    public function apps(): HasMany
+    public function organizations(): BelongsToMany
     {
-        return $this->hasMany(App::class);
+        return $this->belongsToMany(Organization::class)
+            ->using(OrganizationUser::class)
+            ->withPivot(['id', 'role'])
+            ->withTimestamps();
+    }
+
+    public static function withoutOrganizationCreation(): self
+    {
+        static::$shouldCreateOrganization = false;
+
+        return new static;
+    }
+
+    public static function withOrganizationCreation(): self
+    {
+        static::$shouldCreateOrganization = true;
+
+        return new static;
+    }
+
+    private static function shouldCreateOrganization(): bool
+    {
+        $shouldCreateOrganization = static::$shouldCreateOrganization;
+        static::$shouldCreateOrganization = true;
+
+        return $shouldCreateOrganization;
     }
 }

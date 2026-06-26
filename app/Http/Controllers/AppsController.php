@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateAppRequest;
 use App\Jobs\RefreshReverb;
 use App\Models\App;
+use App\Models\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -12,27 +13,36 @@ use Illuminate\Support\Str;
 
 class AppsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Organization $organization): JsonResponse
     {
-        return response()->json(
-            Auth::user()->apps()->paginate(1000)
-        );
-    }
-
-    public function show(App $app): JsonResponse
-    {
-
-        if (Auth::user()->cannot('view', $app)) {
+        if (Auth::user()->cannot('view', $organization)) {
             abort(403);
         }
 
-        return response()->json($app);
+        return response()->json(
+            $organization->apps()->paginate(1000)
+        );
     }
 
-    public function store(CreateAppRequest $request, Str $stringSupport): JsonResponse
+    public function show(Organization $organization, App $app): JsonResponse
     {
+        if (Auth::user()->cannot('view', $organization)) {
+            abort(403);
+        }
+
+        $app = $organization->apps()->findOrFail($app->id);
+
+        return response()->json($app->toArray());
+    }
+
+    public function store(Organization $organization, CreateAppRequest $request, Str $stringSupport): JsonResponse
+    {
+        if (Auth::user()->cannot('edit', $organization)) {
+            abort(403);
+        }
+
         $createdApp = App::create([
-            'user_id' => Auth::user()->id,
+            'organization_id' => $organization->id,
             'app_name' => $request->get('app_name'),
             'app_language_choice' => $request->get('app_language_choice'),
             'app_id' => (string) random_int(1000000000, 9999999999),
@@ -52,12 +62,13 @@ class AppsController extends Controller
         );
     }
 
-    public function destroy(App $app): Response
+    public function destroy(Organization $organization, App $app): Response
     {
-        if (Auth::user()->cannot('delete', $app)) {
+        if (Auth::user()->cannot('edit', $organization)) {
             abort(403);
         }
 
+        $app = $organization->apps()->findOrFail($app->id);
         $app->delete();
         RefreshReverb::dispatch();
 

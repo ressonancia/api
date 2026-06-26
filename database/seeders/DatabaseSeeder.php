@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Console\Commands\Install;
 use App\Models\App;
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Laravel\Passport\Client;
@@ -30,12 +31,36 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('secret'),
         ]);
 
+        $zaphodOrganization = $user->organizations()
+            ->wherePivot('role', Organization::ROLE_OWNER)
+            ->firstOrFail();
+
+        $arthur = User::withoutOrganizationCreation()->factory()->create([
+            'name' => 'Arthur Dent',
+            'email' => 'dent@l30.space',
+            'password' => bcrypt('secret'),
+        ]);
+
+        $arthur->organizations()->attach($zaphodOrganization->id, [
+            'role' => Organization::ROLE_MEMBER,
+        ]);
+
+        $organizations = Organization::factory()->times(2)->create();
+
+        $user->organizations()->attach($organizations->first()->id, [
+            'role' => Organization::ROLE_ADMIN,
+        ]);
+
+        $user->organizations()->attach($organizations->last()->id, [
+            'role' => Organization::ROLE_MEMBER,
+        ]);
+
         Client::truncate();
 
         Install::installOauthClients();
 
         App::factory()->times(20)->create([
-            'user_id' => $user->id,
+            'organization_id' => $zaphodOrganization->id,
         ]);
     }
 }

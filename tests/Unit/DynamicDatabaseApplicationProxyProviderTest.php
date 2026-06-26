@@ -3,6 +3,7 @@
 use App\Models\App;
 use App\Ressonance\DatabaseApplicationProvider;
 use App\Ressonance\DynamicDatabaseApplicationProxyProvider;
+use Illuminate\Support\Str;
 use Laravel\Reverb\Application;
 use Laravel\Reverb\Exceptions\InvalidApplication;
 
@@ -11,7 +12,7 @@ pest()->extend(Tests\TestCase::class);
 beforeEach(function () {
     $this->appsCollection = App::factory()
         ->times(3)
-        ->create(['user_id' => 1])
+        ->create(['organization_id' => Str::uuid()->toString()])
         ->collect();
 
     $this->databaseApplicationProvider

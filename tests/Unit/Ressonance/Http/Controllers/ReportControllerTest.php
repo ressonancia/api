@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\App;
+use App\Models\Organization;
 use Laravel\Reverb\ApplicationManager;
 
 use function React\Async\await;
@@ -12,7 +13,7 @@ it('can return debug report', function () {
     app()->make(ApplicationManager::class)->forgetDrivers();
 
     $app = App::factory()->create([
-        'user_id' => 1,
+        'organization_id' => Organization::factory()->create()->id,
     ]);
 
     $response = await($this->requestWithoutAppId('/report'));
