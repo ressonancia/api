@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
 use App\Models\App;
+use App\Models\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
@@ -12,7 +13,7 @@ class AppMetricsController extends Controller
 {
     public function index(): JsonResponse
     {
-        $apps = App::with('user')->get();
+        $apps = App::with('organization.users')->get();
         $metrics = [];
 
         foreach ($apps as $app) {
@@ -26,10 +27,12 @@ class AppMetricsController extends Controller
                 }
             } catch (\Exception $e) {}
 
+            $owner = $app->organization ? $app->organization->users->where('pivot.role', Organization::ROLE_OWNER)->first() : null;
+
             $metrics[] = [
                 'app_name' => $app->app_name,
                 'app_id' => $app->app_id,
-                'user_mail' => $app->user ? $app->user->email : null,
+                'user_mail' => $owner ? $owner->email : ($app->organization && $app->organization->users->first() ? $app->organization->users->first()->email : null),
                 'current_connections' => (int) $connections,
                 'messages_sent' => 0,
             ];
