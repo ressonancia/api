@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
 use App\Models\App;
+use App\Models\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
@@ -26,7 +27,7 @@ class AppMetricsController extends Controller
                 }
             } catch (\Exception $e) {}
 
-            $owner = $app->organization ? $app->organization->users->where('pivot.role', \App\Models\Organization::ROLE_OWNER)->first() : null;
+            $owner = $app->organization ? $app->organization->users->where('pivot.role', Organization::ROLE_OWNER)->first() : null;
 
             $metrics[] = [
                 'app_name' => $app->app_name,
