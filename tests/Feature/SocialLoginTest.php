@@ -65,8 +65,17 @@ test('user can signup with social accounts', function () {
     expect($cachedSocialLoginData['user']->email)->toBe($user->email);
     expect($cachedSocialLoginData['token_type'])->toBe('Bearer');
     expect($cachedSocialLoginData['access_token'])->not->toBeEmpty();
+    expect($cachedSocialLoginData['is_new_user'])->toBeTrue();
+    expect($cachedSocialLoginData['auth_provider'])->toBe('github');
     expect((int) ceil($cachedSocialLoginData['expires_in']))
         ->toBe((int) ceil(now()->diffInSeconds(now()->addYear(), true)));
+
+    $this->postJson(
+        route('api.social.auth.access-token', ['authorizationCode' => $this->uuid])
+    )->assertOk()->assertJson([
+        'is_new_user' => true,
+        'auth_provider' => 'github',
+    ]);
 
 });
 
@@ -86,6 +95,13 @@ test('social login does not duplicate users', function () {
     expect(
         cache()->get('social_login_'.$this->uuid)['user']->id,
     )->toBe($user->fresh()->id);
+
+    $this->postJson(
+        route('api.social.auth.access-token', ['authorizationCode' => $this->uuid])
+    )->assertOk()->assertJson([
+        'is_new_user' => false,
+        'auth_provider' => 'github',
+    ]);
 });
 
 test('authorization code expires after 5 minutes', function () {

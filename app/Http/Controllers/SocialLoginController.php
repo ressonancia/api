@@ -25,6 +25,7 @@ class SocialLoginController extends Controller
             'email' => $user->email,
             'email_verified_at' => now(),
         ]);
+        $isNewUser = $user->wasRecentlyCreated;
 
         // Not necesary to trigger Register event
         // Because the email is already validated by the provider
@@ -40,6 +41,8 @@ class SocialLoginController extends Controller
                 'token_type' => 'Bearer',
                 'expires_in' => $token->token
                     ->expires_at->diffInSeconds(now(), true),
+                'is_new_user' => $isNewUser,
+                'auth_provider' => $provider,
             ],
             now()->addMinutes(5)
         );
