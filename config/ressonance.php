@@ -14,6 +14,9 @@ return [
 
     'refresh_reverb_url' => env('REFRESH_REVERB_URL', 'http://localhost:8080/refresh-applications'),
 
+    // Internal address used by the API when querying Reverb's management API.
+    'reverb_api_url' => env('REVERB_API_URL'),
+
     /*
     |--------------------------------------------------------------------------
     | Ressonance Single Page Application URL

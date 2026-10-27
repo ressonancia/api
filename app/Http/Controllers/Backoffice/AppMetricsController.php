@@ -5,27 +5,41 @@ namespace App\Http\Controllers\Backoffice;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\Organization;
+use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\Response;
 
 class AppMetricsController extends Controller
 {
     public function index(): JsonResponse
     {
         $apps = App::with('organization.users')->get();
+        $connectionResponses = [];
+
+        foreach ($apps->chunk(10) as $appBatch) {
+            $batchResponses = Http::pool(function (Pool $pool) use ($appBatch) {
+                foreach ($appBatch as $app) {
+                    $pool->as((string) $app->id)
+                        ->connectTimeout(2)
+                        ->timeout(5)
+                        ->get($this->signedReverbRequestUrl($app));
+                }
+            });
+
+            $connectionResponses += $batchResponses;
+        }
+
         $metrics = [];
 
         foreach ($apps as $app) {
             $connections = 0;
+            $connectionsResponse = $connectionResponses[$app->id] ?? null;
 
-            try {
-                $connectionsResponse = $this->signedReverbRequest($app);
-                if ($connectionsResponse->successful()) {
-                    $connectionsData = $connectionsResponse->json();
-                    $connections = $connectionsData['connections'] ?? 0;
-                }
-            } catch (\Exception $e) {}
+            if ($connectionsResponse instanceof Response && $connectionsResponse->successful()) {
+                $connectionsData = $connectionsResponse->json();
+                $connections = $connectionsData['connections'] ?? 0;
+            }
 
             $owner = $app->organization ? $app->organization->users->where('pivot.role', Organization::ROLE_OWNER)->first() : null;
 
@@ -41,7 +55,7 @@ class AppMetricsController extends Controller
         return response()->json($metrics);
     }
 
-    private function signedReverbRequest(App $app): Response
+    private function signedReverbRequestUrl(App $app): string
     {
         $path = "/apps/{$app->app_id}/connections";
         $method = 'GET';
@@ -66,8 +80,8 @@ class AppMetricsController extends Controller
 
         $params['auth_signature'] = hash_hmac('sha256', $stringToSign, $secret);
 
-        $url = "{$scheme}://{$host}:{$port}{$path}?" . http_build_query($params);
+        $baseUrl = rtrim(config('ressonance.reverb_api_url') ?: "{$scheme}://{$host}:{$port}", '/');
 
-        return Http::get($url);
+        return "{$baseUrl}{$path}?" . http_build_query($params);
     }
 }
