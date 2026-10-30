@@ -1,0 +1,90 @@
+name: Deploy Ressonance API
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      REMOTE_USER: ressonance_api
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+      SSH_KEY_NAME: id_rsa_ressonance
+      WG_INTERFACE: wg0
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up PHP environment
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      # Step 3: Install dependencies (Envoy is a dev dependency)
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
+
+      # Step 4: Connect to the private network through WireGuard
+      - name: Set up WireGuard
+        env:
+          WIREGUARD_CONF: ${{ secrets.WIREGUARD_CONF }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq wireguard-tools
+
+          sudo install -d -m 700 /etc/wireguard
+          printf '%s\n' "$WIREGUARD_CONF" | tr -d '\r' | sudo tee /etc/wireguard/$WG_INTERFACE.conf > /dev/null
+          sudo chmod 600 /etc/wireguard/$WG_INTERFACE.conf
+
+          # Output is discarded because wg-quick echoes VPN addresses that log masking does not cover
+          if ! sudo wg-quick up $WG_INTERFACE > /dev/null 2>&1; then
+            echo "Error: failed to bring up WireGuard interface '$WG_INTERFACE'."
+            exit 1
+          fi
+          echo "WireGuard interface '$WG_INTERFACE' is up."
+
+      # Step 5: Run the Envoy deploy story on the remote server
+      - name: Deploy to Server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/$SSH_KEY_NAME
+          chmod 600 ~/.ssh/$SSH_KEY_NAME
+
+          # Envoy shells out to plain `ssh`, so the key and host options go through the SSH config
+          cat > ~/.ssh/config <<EOF
+          Host $REMOTE_HOST
+            User $REMOTE_USER
+            IdentityFile ~/.ssh/$SSH_KEY_NAME
+            IdentitiesOnly yes
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ConnectTimeout 15
+          EOF
+          chmod 600 ~/.ssh/config
+
+          echo "Deploying to $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH..."
+          ./vendor/bin/envoy run deploy \
+            --server="$REMOTE_USER@$REMOTE_HOST" \
+            --app_path="$REMOTE_PATH"
+          echo "Deployment completed successfully!"
+
+      - name: Clean Up
+        if: always()
+        run: |
+          sudo wg-quick down $WG_INTERFACE 2>/dev/null || true
+          sudo rm -f /etc/wireguard/$WG_INTERFACE.conf
+          rm -f ~/.ssh/$SSH_KEY_NAME ~/.ssh/config
