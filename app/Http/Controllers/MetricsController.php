@@ -2,37 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\App;
+use App\Services\AppMetricsService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MetricsController extends Controller
 {
+    public function __construct(
+        private AppMetricsService $appMetricsService,
+    ) {}
+
     public function index(): JsonResponse
     {
         $user = Auth::user();
-        $apps = $user->apps;
+        $organizationIds = $user->organizations()->pluck('organizations.id');
+
+        $apps = App::with('organization')
+            ->whereIn('organization_id', $organizationIds)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $connectionsByApp = $this->appMetricsService->getCurrentConnections($apps);
 
         $metrics = [];
-        $twentyFourHoursAgo = Carbon::now()->subHours(24)->getTimestamp();
 
         foreach ($apps as $app) {
-            $currentConnections = DB::table('pulse_values')
-                ->where('type', 'reverb_connections')
-                ->where('key', $app->app_id)
-                ->value('value') ?? 0;
-
-            $messagesSentAgg = DB::table('pulse_aggregates')
-                ->where('type', 'reverb_message')
-                ->where('key', $app->app_id)
-                ->where('bucket', '>=', $twentyFourHoursAgo)
-                ->where('aggregate', 'count')
-                ->sum('value');
-
             $metrics[] = [
-                'connections' => (int) $currentConnections,
-                'messages' => (int) $messagesSentAgg,
+                'id' => $app->id,
+                'app_id' => $app->app_id,
+                'app_name' => $app->app_name,
+                'app_language_choice' => $app->app_language_choice,
+                'organization_id' => $app->organization_id,
+                'organization_name' => $app->organization?->name,
+                'current_connections' => $connectionsByApp[$app->id] ?? 0,
             ];
         }
 
